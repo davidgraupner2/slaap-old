@@ -4,6 +4,8 @@ import { PG_CONNECTION } from './constants';
 
 const dbProvider = {
   provide: PG_CONNECTION,
+
+  // Allows us to get the dependency
   useValue: new Pool({
     user: 'postgres',
     host: 'localhost',
@@ -13,6 +15,8 @@ const dbProvider = {
   }),
 };
 
+// Register the provider wirth NestJS and export it
+// so it can be used by Dependency Injection
 @Module({
   providers: [dbProvider],
   exports: [dbProvider],
