@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  dev-db:
+    environment:
+      POSGRES_USER: postgres
+      POSTGRES_DB: slaap
+      POSTGRES_PASSWORD: sIrlk46Wlxa73jirI@rO
+    image: 'postgres'
+    networks:
+      - slaap-network
+    ports:
+      - '5434:5432'
+networks:
+  slaap-network:
