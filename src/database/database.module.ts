@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { Pool } from 'pg';
 import { PG_CONNECTION } from './constants';
+import { DatabaseService } from './database.service';
 
 const dbProvider = {
   provide: PG_CONNECTION,
@@ -18,7 +19,7 @@ const dbProvider = {
 // Register the provider wirth NestJS and export it
 // so it can be used by Dependency Injection
 @Module({
-  providers: [dbProvider],
+  providers: [dbProvider, DatabaseService],
   exports: [dbProvider],
 })
 export class DbModule {}
