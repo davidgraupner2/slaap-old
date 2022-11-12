@@ -1,14 +1,23 @@
 version: '3.8'
 services:
   dev-db:
+    image: 'postgres'
+    restart: always
     environment:
       POSGRES_USER: postgres
       POSTGRES_DB: slaap
       POSTGRES_PASSWORD: sIrlk46Wlxa73jirI@rO
-    image: 'postgres'
+    logging:
+      options:
+        max-size: 10m
+        max-file: '3'
     networks:
       - slaap-network
     ports:
       - '5434:5432'
+    volumes:
+      - ./postgres-data:/var/lib/postgres/data
+      - ./src/database/postgres/init_scripts/1-Create_Root_Schema.sql:/docker-entrypoint-initdb.d/1-Create_Root_Schema.sql
+      - ./src/database/postgres/init_scripts/1-Create_Root_Tables.sql:/docker-entrypoint-initdb.d/1-Create_Root_Tables.sql
 networks:
   slaap-network:
