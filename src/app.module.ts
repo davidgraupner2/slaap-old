@@ -11,5 +11,6 @@ import { DatabaseService } from './database/database.service';
   imports: [AuthModule, DbModule],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService, DatabaseService],
+  // exports: [DatabaseService],
 })
 export class AppModule {}
