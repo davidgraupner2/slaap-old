@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { PG_CONNECTION } from './database/constants';
-import { DatabaseService } from './database/database.service';
+import { PG_CONNECTION } from './database/postgres/constants';
+import { DatabaseService } from './database/postgres/database.service';
 
 @Injectable()
 export class AppService {

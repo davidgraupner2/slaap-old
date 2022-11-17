@@ -1,5 +1,5 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { PG_CONNECTION } from '../database/constants';
+import { PG_CONNECTION } from 'src/database/postgres/constants';
 
 @Injectable()
 export class DatabaseService {
