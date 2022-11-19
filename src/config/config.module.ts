@@ -1,8 +1,9 @@
-import { Module, DynamicModule } from '@nestjs/common';
+import { Module, DynamicModule, Global } from '@nestjs/common';
 import { ConfigService } from './config.service';
 import { CONFIG_OPTIONS } from './constants';
 import { EnvConfig, ConfigOptions } from './interfaces';
 
+@Global()
 @Module({})
 export class ConfigModule {
   static register(options: ConfigOptions): DynamicModule {
