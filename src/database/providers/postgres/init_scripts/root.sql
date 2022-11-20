@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS public.root
     id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
     created timestamp with time zone NOT NULL DEFAULT now(),
     updated timestamp with time zone NOT NULL DEFAULT now(),
-    created_by bigint,
-    updated_by bigint,
+    created_by bigint NOT NULL,
+    updated_by bigint NOT NULL,
     CONSTRAINT root_pkey PRIMARY KEY (id),
     CONSTRAINT created_by FOREIGN KEY (created_by)
         REFERENCES public."user" (id) MATCH SIMPLE
