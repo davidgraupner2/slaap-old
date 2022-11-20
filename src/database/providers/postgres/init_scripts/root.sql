@@ -68,27 +68,27 @@ COMMENT ON COLUMN public.root.updated_by
 
 CREATE TABLE IF NOT EXISTS public.application
 (
-    -- Inherited from table public.root: id bigint NOT NULL,
+    -- Inherited from table public.root: id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
     -- Inherited from table public.root: created timestamp with time zone NOT NULL DEFAULT now(),
     -- Inherited from table public.root: updated timestamp with time zone NOT NULL DEFAULT now(),
     -- Inherited from table public.root: created_by bigint,
     -- Inherited from table public.root: updated_by bigint,
-    name character varying COLLATE pg_catalog."default"
+    name character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT application_pkey PRIMARY KEY (id),
+    CONSTRAINT name UNIQUE (name)
+        INCLUDE(name)
 )
     INHERITS (public.root)
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.application
     OWNER to postgres;
-	
--- Make sure ID is a primary key
-ALTER TABLE public.application ADD CONSTRAINT application_pkey PRIMARY KEY (id); 
 
 -- Make sure ID is a identity column
 ALTER TABLE public.application ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 );
 
 COMMENT ON TABLE public.application
-    IS 'Lists all application registered on the platform';
+    IS 'Stores all application registered on the platform';
 
-COMMENT ON COLUMN public.application.name
-    IS 'The unique name of the application installed';
+COMMENT ON CONSTRAINT name ON public.application
+    IS 'Application Names must be unique';
