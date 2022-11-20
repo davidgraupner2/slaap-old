@@ -17,7 +17,6 @@ services:
       - '5434:5432'
     volumes:
       - ./postgres-data:/var/lib/postgres/data
-      - ./src/database/postgres/init_scripts/1-Create_Root_Schema.sql:/docker-entrypoint-initdb.d/1-Create_Root_Schema.sql
-      - ./src/database/postgres/init_scripts/2-Create_Root_Tables.sql:/docker-entrypoint-initdb.d/2-Create_Root_Tables.sql
+      - ./src/database/providers/postgres/init_scripts/root.sql:/docker-entrypoint-initdb.d/root.sql
 networks:
   slaap-network:

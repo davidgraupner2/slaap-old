@@ -25,7 +25,6 @@ const dbProvider = {
 
 @Global()
 @Module({
-  // imports: [ConfigModule],
   providers: [dbProvider],
   exports: [dbProvider],
 })

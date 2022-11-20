@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { IDBProviderInterface, constructorInterface } from './interfaces';
+import { IDBProviderInterface, constructorInterface } from '../interfaces';
 import { Pool } from 'pg';
 
 @Injectable()

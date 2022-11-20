@@ -12,7 +12,8 @@ export class AuthController {
   }
 
   @Post('login')
-  login() {
-    return this.authservice.login();
+  login(@Body() dto: userDTO) {
+    console.log('Called');
+    return this.authservice.login(dto.email, dto.password);
   }
 }
