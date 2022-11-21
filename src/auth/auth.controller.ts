@@ -1,8 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { SpawnSyncOptionsWithBufferEncoding } from 'child_process';
+import { Body, Request, Controller, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { localLoginDTO } from './dto';
-// import { userDTO } from './dto';
+import { LocalAuthGuard, JWTAuthGuard } from './auth.guards';
 
 @Controller('auth')
 export class AuthController {
@@ -13,8 +13,14 @@ export class AuthController {
   //   return this.authservice.register(dto);
   // }
 
+  // Login uses the local passport strategy to authenticate the user
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Body() dto: localLoginDTO) {
-    return this.authservice.validateUser(dto);
+  async login(@Request() req) {
+    // This will only get called if the 'validate' function
+    // in the local auth strategy was successful
+
+    // return a JWT Token
+    return this.authservice.signedToken(req.user.id, req.user.username);
   }
 }
