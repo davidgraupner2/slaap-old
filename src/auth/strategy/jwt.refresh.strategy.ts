@@ -12,7 +12,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
   constructor(configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      passReqToCallBack: true,
+      passReqToCallback: true,
       secretOrKey: configService.get('JWT_REFRESH_SECRET'),
     });
   }
@@ -20,7 +20,10 @@ export class JwtRefreshStrategy extends PassportStrategy(
   // This strategy first verifies the JWT Token and its signature and decodes the token
   // Then it invokes the validate function below passing in the decoded token
   validate(req: Request, payload: any) {
+    // Extract the refresh token from the Authorization Header
     const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
+
+    // Attach the Refres Token to the user object which the stragegy will place into the request object
     return { ...payload, refreshToken };
   }
 }

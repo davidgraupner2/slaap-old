@@ -1,11 +1,13 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { localLoginDTO } from './dto';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { DB_CONNECTION } from 'src/database/constants';
 import * as argon from 'argon2';
 import { ConfigService } from 'src/config/config.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
+import { ACCESS_DENIED } from './constants';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +16,7 @@ export class AuthService {
     private usersService: UsersService,
     private configService: ConfigService,
     private jwt: JwtService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
   ) {}
 
   // async register(dto: userDTO) {
@@ -31,6 +34,8 @@ export class AuthService {
   async validateUser(email: string, password: string) {
     // Request the user details that match the username / email
     // - leveraging the usersService
+
+    this.logger.log('info', 'This is the way we have it!!!');
 
     const user = await this.usersService.findUserByEmail(email);
 
@@ -65,6 +70,7 @@ export class AuthService {
       email: email,
     };
 
+    // Generate the access token
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(payload, {
         expiresIn: this.configService.get('JWT_EXPIRES_IN'),
@@ -73,11 +79,12 @@ export class AuthService {
         issuer: this.configService.get('JWT_ISSUER'),
         jwtid: uuidv4(),
       }),
+      // Generate the refresh token
       this.jwt.signAsync(payload, {
         expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN'),
         secret: this.configService.get('JWT_REFRESH_SECRET'),
-        audience: this.configService.get('JWT_AUDIENCE'),
-        issuer: this.configService.get('JWT_ISSUER'),
+        audience: this.configService.get('JWT_REFRESH_AUDIENCE'),
+        issuer: this.configService.get('JWT_REFRESH_ISSUER'),
         jwtid: uuidv4(),
       }),
     ]);
@@ -85,15 +92,7 @@ export class AuthService {
     // Save the refreshToken against the user record
     this.updateRefreshToken(userId, refreshToken);
 
-    // Generate the token
-    // const token = await this.jwt.signAsync(payload, {
-    //   expiresIn: this.configService.get('JWT_EXPIRES_IN'),
-    //   secret: this.configService.get('JWT_SECRET'),
-    //   audience: this.configService.get('JWT_AUDIENCE'),
-    //   issuer: this.configService.get('JWT_ISSUER'),
-    //   jwtid: uuidv4(),
-    // });
-
+    // Provide the new access tokens and refresh tokens
     return { accessToken, refreshToken };
   }
 
@@ -108,5 +107,39 @@ export class AuthService {
 
     //Add the refreshtoken to the DB, against the user record
     this.usersService.saveRefreshToken(userId, hashedRefreshToken);
+  }
+
+  async refreshTokens(userId: number, refreshToken: string) {
+    // Get the user record from the DB
+    const user = await this.usersService.findUserByID(userId);
+
+    // If no user or user has no refresh token - then deny the request to refresh the token
+    if (!user[0] || !user[0].refreshtoken) {
+      throw new ForbiddenException(ACCESS_DENIED);
+    }
+
+    // Compare the current refresh token to the one we have recorded against the user record
+    console.log('User: ' + user[0].refreshtoken);
+    console.log('Same? ' + refreshToken);
+
+    const refreshTokenMatches = await argon.verify(
+      user[0].refreshtoken,
+      refreshToken,
+    );
+
+    console.log('Start');
+    // Refresh token do not match - deny the request to refresh the access token
+    if (!refreshTokenMatches) throw new ForbiddenException(ACCESS_DENIED);
+
+    console.log('End');
+
+    // Refresh tokens match - get new tokens
+    const tokens = await this.getTokens(user[0].id, user[0].email);
+
+    // Save the new refresh token against the user record
+    await this.updateRefreshToken(user[0].id, tokens.refreshToken);
+
+    // provide the new tokens back to the user
+    return tokens;
   }
 }

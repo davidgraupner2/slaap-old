@@ -9,7 +9,12 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { localLoginDTO } from './dto';
-import { LocalAuthGuard, JWTAuthGuard, Public } from './auth.guards';
+import {
+  LocalAuthGuard,
+  JWTAuthGuard,
+  Public,
+  JWTRefreshAuthGuard,
+} from './guards/auth.guards';
 
 @Controller('auth')
 export class AuthController {
@@ -27,9 +32,14 @@ export class AuthController {
     this.authservice.logout(req.user.userId);
   }
 
+  @Public()
+  @UseGuards(JWTRefreshAuthGuard)
   @Get('refresh')
   refresh_token(@Request() req) {
-    return 'logout';
+    const userId = req.user['sub'];
+    const refreshToken = req.user['refreshToken'];
+    console.log(refreshToken);
+    return this.authservice.refreshTokens(userId, refreshToken);
   }
 
   // Login uses the local passport strategy to authenticate the user

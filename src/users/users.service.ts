@@ -14,6 +14,13 @@ export class UsersService {
     );
   }
 
+  // Get a user by their id
+  async findUserByID(id: number): Promise<User | undefined> {
+    return this.dbProvider.executeQueryText(
+      `select * from public.user where id='${id}'`,
+    );
+  }
+
   // Save a users refresh token
   async saveRefreshToken(userId: number, hashedRefreshToken: string) {
     return this.dbProvider.executeQueryText(

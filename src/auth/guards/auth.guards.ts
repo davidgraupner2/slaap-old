@@ -8,6 +8,10 @@ import { Reflector } from '@nestjs/core';
 export class LocalAuthGuard extends AuthGuard('local') {}
 
 @Injectable()
+//Create a class to implement a guard using the JWT Refresh Token Strategy
+export class JWTRefreshAuthGuard extends AuthGuard('jwt-refresh') {}
+
+@Injectable()
 // Create a class to implement a guard using JWT auth passport strategy
 export class JWTAuthGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {

@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { JWTAuthGuard, Public } from 'src/auth/auth.guards';
+import { JWTAuthGuard, Public } from 'src/auth/guards/auth.guards';
 import { UseGuards, Get, Request } from '@nestjs/common';
 
 @Controller('users')
