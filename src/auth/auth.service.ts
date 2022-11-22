@@ -63,8 +63,6 @@ export class AuthService {
       email: email,
     };
 
-    console.log(email);
-
     // Generate the token
     const token = await this.jwt.signAsync(payload, {
       expiresIn: this.configService.get('JWT_EXPIRES_IN'),
