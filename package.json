@@ -6,6 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "token:secret:generate": "node -e 'console.log(require(\"crypto\").randomBytes(256).toString(\"base64\"));'",
     "db:dev:rm": "docker compose rm dev-db -s -f -v",
     "db:dev:up": "docker compose up dev-db -d",
     "db:dev:rebuild": "npm run db:dev:rm && npm run db:dev:up",

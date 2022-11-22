@@ -13,4 +13,18 @@ export class UsersService {
       `select * from public.user where username='${email}'`,
     );
   }
+
+  // Save a users refresh token
+  async saveRefreshToken(userId: number, hashedRefreshToken: string) {
+    return this.dbProvider.executeQueryText(
+      `update public.user set refreshtoken = '${hashedRefreshToken}' where id = ${userId}`,
+    );
+  }
+
+  // clear a users refresh token
+  async clearRefreshToken(userId: number) {
+    return this.dbProvider.executeQueryText(
+      `update public.user set refreshtoken = '' where id = ${userId}`,
+    );
+  }
 }

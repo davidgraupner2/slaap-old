@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy, LocalStrategy } from './strategy';
+import { JwtRefreshStrategy, JwtStrategy, LocalStrategy } from './strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JWTAuthGuard } from './auth.guards';
@@ -18,6 +18,7 @@ import { APP_GUARD } from '@nestjs/core';
     UsersService,
     JwtStrategy,
     LocalStrategy,
+    JwtRefreshStrategy,
     { provide: APP_GUARD, useClass: JWTAuthGuard },
   ],
   controllers: [AuthController],

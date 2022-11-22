@@ -52,28 +52,61 @@ export class AuthService {
     return user;
   }
 
-  // Generate a signed JWT Token
-  async signedToken(
-    userId: number,
-    email: string,
-  ): Promise<{ access_token: string }> {
+  //Logout by clearing the refresh token
+  async logout(userId: number) {
+    return this.usersService.clearRefreshToken(userId);
+  }
+
+  // Generate the signed JWT Token and Refresh Token
+  async getTokens(userId: number, email: string) {
     // Generate the payload
     const payload = {
       sub: userId,
       email: email,
     };
 
-    // Generate the token
-    const token = await this.jwt.signAsync(payload, {
-      expiresIn: this.configService.get('JWT_EXPIRES_IN'),
-      secret: this.configService.get('JWT_SECRET'),
-      audience: this.configService.get('JWT_AUDIENCE'),
-      issuer: this.configService.get('JWT_ISSUER'),
-      jwtid: uuidv4(),
-    });
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwt.signAsync(payload, {
+        expiresIn: this.configService.get('JWT_EXPIRES_IN'),
+        secret: this.configService.get('JWT_SECRET'),
+        audience: this.configService.get('JWT_AUDIENCE'),
+        issuer: this.configService.get('JWT_ISSUER'),
+        jwtid: uuidv4(),
+      }),
+      this.jwt.signAsync(payload, {
+        expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN'),
+        secret: this.configService.get('JWT_REFRESH_SECRET'),
+        audience: this.configService.get('JWT_AUDIENCE'),
+        issuer: this.configService.get('JWT_ISSUER'),
+        jwtid: uuidv4(),
+      }),
+    ]);
 
-    return {
-      access_token: token,
-    };
+    // Save the refreshToken against the user record
+    this.updateRefreshToken(userId, refreshToken);
+
+    // Generate the token
+    // const token = await this.jwt.signAsync(payload, {
+    //   expiresIn: this.configService.get('JWT_EXPIRES_IN'),
+    //   secret: this.configService.get('JWT_SECRET'),
+    //   audience: this.configService.get('JWT_AUDIENCE'),
+    //   issuer: this.configService.get('JWT_ISSUER'),
+    //   jwtid: uuidv4(),
+    // });
+
+    return { accessToken, refreshToken };
+  }
+
+  hashData(data: string) {
+    return argon.hash(data);
+  }
+
+  // Save the current refresh token against the user record
+  async updateRefreshToken(userId: number, refreshToken: string) {
+    // Hash the refresh token before saving in the database
+    const hashedRefreshToken = await this.hashData(refreshToken);
+
+    //Add the refreshtoken to the DB, against the user record
+    this.usersService.saveRefreshToken(userId, hashedRefreshToken);
   }
 }
