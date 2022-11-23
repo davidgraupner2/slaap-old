@@ -6,6 +6,7 @@ import { ConfigService } from 'src/config/config.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import { ACCESS_DENIED } from './constants';
+import { LogEntryExit } from 'src/common/custom.decorators';
 
 @Injectable()
 export class AuthService {
@@ -29,10 +30,13 @@ export class AuthService {
   //   };
   // }
 
+  @LogEntryExit()
   async validateUser(email: string, password: string) {
     // Request the user details that match the username / email
     // - leveraging the usersService
 
+    console.log('Email ', email);
+    console.log('Pwd ', password);
     this.logger.error({
       message: 'This is a error',
       context: this.constructor.name,
@@ -59,11 +63,13 @@ export class AuthService {
   }
 
   //Logout by clearing the refresh token
+  @LogEntryExit()
   async logout(userId: number) {
     return this.usersService.clearRefreshToken(userId);
   }
 
   // Generate the signed JWT Token and Refresh Token
+  @LogEntryExit()
   async getTokens(userId: number, email: string) {
     // Generate the payload
     const payload = {
@@ -97,11 +103,13 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  @LogEntryExit()
   hashData(data: string) {
     return argon.hash(data);
   }
 
   // Save the current refresh token against the user record
+  @LogEntryExit()
   async updateRefreshToken(userId: number, refreshToken: string) {
     // Hash the refresh token before saving in the database
     const hashedRefreshToken = await this.hashData(refreshToken);
@@ -110,6 +118,7 @@ export class AuthService {
     this.usersService.saveRefreshToken(userId, hashedRefreshToken);
   }
 
+  @LogEntryExit()
   async refreshTokens(userId: number, refreshToken: string) {
     // Get the user record from the DB
     const user = await this.usersService.findUserByID(userId);
