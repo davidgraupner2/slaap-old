@@ -1,10 +1,4 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  Logger,
-  LoggerService,
-} from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, Logger } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { DB_CONNECTION } from 'src/database/constants';
 import * as argon from 'argon2';
@@ -12,9 +6,6 @@ import { ConfigService } from 'src/config/config.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import { ACCESS_DENIED } from './constants';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { loggers } from 'winston';
-// import { Logger } from 'winston';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +13,7 @@ export class AuthService {
     @Inject(DB_CONNECTION) private dbProvider: any,
     private usersService: UsersService,
     private configService: ConfigService,
-    private jwt: JwtService, // private readonly logger: LoggerService, // @Inject(WINSTON_MODULE_NEST_PROVIDER) // private readonly logger: Logger,
+    private jwt: JwtService,
     private readonly logger: Logger,
   ) {}
 
@@ -42,22 +33,10 @@ export class AuthService {
     // Request the user details that match the username / email
     // - leveraging the usersService
 
-    // this.logger;
-
-    // Logger.log(
-    //   'This is the message', // works for message
-    //   'this context', //works for context
-    //   'this is a debug meessgae',
-    // );
-    // this.logger.log('error', 'This is the error way');
-    // this.logger.log('warn', 'This is the warn way');
-    // this.logger.log('test', 'This is the info way');
-    // this.logger.log('http', 'This is the http way');
-    // this.logger.log('verbose', 'This is the verbose way');
-    // this.logger.log('debug', 'This is the silly way');
-    // this.logger.log('silly', 'This is the silly way');
-    this.logger.error('This is a error', '', 'ValidUser', ['me']);
-    this.logger.warn('This is a warning');
+    this.logger.error({
+      message: 'This is a error',
+      context: this.constructor.name,
+    });
 
     const user = await this.usersService.findUserByEmail(email);
 
