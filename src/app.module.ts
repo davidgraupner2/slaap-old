@@ -6,10 +6,11 @@ import { ConfigModule } from './config/config.module';
 import { DBModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { WinstonModule } from 'nest-winston';
-import winston from 'winston/lib/winston/config';
 import { transports, format } from 'winston';
 import { ConfigService } from './config/config.service';
-import { json } from 'stream/consumers';
+
+// Make it easier to set the logging format for Winston below
+const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
 
 @Module({
   imports: [
@@ -30,40 +31,24 @@ import { json } from 'stream/consumers';
     // Custom Transports: https://github.com/winstonjs/winston#adding-custom-transports
 
     WinstonModule.forRootAsync({
-      useFactory: () => ({
+      useFactory: (configService: ConfigService) => ({
         exitOnError: false,
-        defaultMeta: { service: 'user-service' },
+        format: combine(errors({ stack: true }), timestamp(), json()),
         transports: [
+          // Errors will always log to the console
           new transports.Console({
             level: 'error',
-            // format: format.combine(
-            //   format.colorize({ all: true }),
-            //   format.timestamp({ format: 'DD-MM-YYYY hh:mm:ss.SSS A' }),
-            //   format.align(),
-            //   format.json(),
-            // ),
           }),
+          // Logging levels are set by the configuration file
           new transports.File({
             filename: 'logs/application.log',
-            level: 'info',
-            format: format.combine(
-              format.colorize({ all: true }),
-              format.timestamp({ format: 'DD-MM-YYYY hh:mm:ss.SSS A' }),
-              format.align(),
-              format.json(),
-            ),
-          }),
-          new transports.File({
-            filename: 'logs/debug.log',
-            level: 'debug',
+            level: configService.get('LOGGING_LEVEL') || 'error',
           }),
         ],
       }),
+      // Inject the ConfigService, so we can read the
+      // required logging level from the config file
       inject: [ConfigService],
-
-      //
-
-      // level: 'debug',
     }),
   ],
   controllers: [AppController],
