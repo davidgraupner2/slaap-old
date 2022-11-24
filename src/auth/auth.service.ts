@@ -30,7 +30,7 @@ export class AuthService {
   //   };
   // }
 
-  @LogEntryExit()
+  @LogEntryExit
   async validateUser(email: string, password: string) {
     // Request the user details that match the username / email
     // - leveraging the usersService
@@ -63,13 +63,13 @@ export class AuthService {
   }
 
   //Logout by clearing the refresh token
-  @LogEntryExit()
+  @LogEntryExit
   async logout(userId: number) {
     return this.usersService.clearRefreshToken(userId);
   }
 
   // Generate the signed JWT Token and Refresh Token
-  @LogEntryExit()
+  // @LogEntryExit
   async getTokens(userId: number, email: string) {
     // Generate the payload
     const payload = {
@@ -103,13 +103,13 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  @LogEntryExit()
+  @LogEntryExit
   hashData(data: string) {
     return argon.hash(data);
   }
 
   // Save the current refresh token against the user record
-  @LogEntryExit()
+  @LogEntryExit
   async updateRefreshToken(userId: number, refreshToken: string) {
     // Hash the refresh token before saving in the database
     const hashedRefreshToken = await this.hashData(refreshToken);
@@ -118,7 +118,7 @@ export class AuthService {
     this.usersService.saveRefreshToken(userId, hashedRefreshToken);
   }
 
-  @LogEntryExit()
+  @LogEntryExit
   async refreshTokens(userId: number, refreshToken: string) {
     // Get the user record from the DB
     const user = await this.usersService.findUserByID(userId);
