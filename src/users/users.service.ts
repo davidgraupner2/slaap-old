@@ -22,16 +22,16 @@ export class UsersService {
   }
 
   // Save a users refresh token
-  async saveRefreshToken(userId: number, hashedRefreshToken: string) {
+  async saveRefreshToken(id: number, hashedRefreshToken: string) {
     return this.dbProvider.executeQueryText(
-      `update public.user set refreshtoken = '${hashedRefreshToken}' where id = ${userId}`,
+      `update public.user set refreshtoken = '${hashedRefreshToken}' where id = ${id}`,
     );
   }
 
   // clear a users refresh token
-  async clearRefreshToken(userId: number) {
+  async clearRefreshToken(id: number) {
     return this.dbProvider.executeQueryText(
-      `update public.user set refreshtoken = '' where id = ${userId}`,
+      `update public.user set refreshtoken = '' where id = ${id}`,
     );
   }
 }

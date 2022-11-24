@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS public."user"
     id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
     username character varying(100) COLLATE pg_catalog."default" NOT NULL,
     password character varying(1024) COLLATE pg_catalog."default" NOT NULL,
+    refreshtoken character varying(1024) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT user_pkey PRIMARY KEY (id)
 )
 
@@ -92,3 +93,40 @@ COMMENT ON TABLE public.application
 
 COMMENT ON CONSTRAINT name ON public.application
     IS 'Application Names must be unique';
+
+-- Table: public.token_management
+
+-- DROP TABLE IF EXISTS public.token_management;
+
+CREATE TABLE IF NOT EXISTS public.token_management
+(
+    id uuid NOT NULL,
+    user_id bigint NOT NULL,
+    refresh_token character varying(1024) COLLATE pg_catalog."default" NOT NULL,
+    revoked boolean NOT NULL DEFAULT false,
+    CONSTRAINT "UniqueTokenValuesPerUser" PRIMARY KEY (id, refresh_token, user_id),
+    CONSTRAINT user_id FOREIGN KEY (user_id)
+        REFERENCES public."user" (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.token_management
+    OWNER to postgres;
+
+COMMENT ON TABLE public.token_management
+    IS 'Stores and tracks the tokens issued to a user';
+
+COMMENT ON COLUMN public.token_management.id
+    IS 'Unique token id assigned to a token';
+
+COMMENT ON COLUMN public.token_management.user_id
+    IS 'The User ID - linked to the user table';
+
+COMMENT ON COLUMN public.token_management.refresh_token
+    IS 'The refresh token, currently paired with the users token';
+
+COMMENT ON COLUMN public.token_management.revoked
+    IS 'Indicates if the token and refresh token have been revoked';

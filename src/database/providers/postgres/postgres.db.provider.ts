@@ -47,6 +47,11 @@ export class PostGresDBProvider implements IDBProviderInterface {
     });
   }
 
+  query(tableName: string): object {
+    console.log('Getting new Query Object ' + tableName);
+    return new Query(tableName);
+  }
+
   /*Show the current configuration, 
   used to setup the connection */
   showConfig(): object {
@@ -109,5 +114,32 @@ export class PostGresDBProvider implements IDBProviderInterface {
     );
 
     return res.rows;
+  }
+}
+
+class Query {
+  // Properties we need
+  columns = [];
+  table = '';
+
+  constructor(tableName: string) {
+    // Update local properties with values passed in
+    console.log('Calling Constructor with ' + tableName);
+    this.table = tableName;
+  }
+
+  addColumn(name: string) {
+    console.log('Adding New Column');
+    // Add the column to the column list - if its not there already
+    if (!this.columns.includes(name)) {
+      this.columns.push(name);
+    }
+
+    return this;
+  }
+
+  execute() {
+    console.log('Executing');
+    console.log(`select ${String(this.columns)} from ${this.table} `);
   }
 }

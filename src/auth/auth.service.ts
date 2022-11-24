@@ -57,6 +57,12 @@ export class AuthService {
       return undefined;
     }
 
+    const q = this.dbProvider
+      .query('testtable')
+      .addColumn('test')
+      .addColumn('test2')
+      .execute();
+
     // If we get here - return the user
     // return this.signedToken(user.id, user.email);
     return user;
