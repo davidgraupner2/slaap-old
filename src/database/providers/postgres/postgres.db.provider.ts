@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as db_interfaces from '../interfaces';
 import { Pool } from 'pg';
-import { PostGresDictionaryManager } from './postgres.dictionary.manager';
+import { PostgresDictionaryManager } from 'src/database/dictionary_managers';
+import { DICTIONARY_MANAGER } from 'src/database/constants';
 
 @Injectable()
 export class PostGresDBProvider implements db_interfaces.IDBProviderInterface {
@@ -14,9 +15,6 @@ export class PostGresDBProvider implements db_interfaces.IDBProviderInterface {
   userName: string;
   password: string;
 
-  // Declare the Dictionary Manager
-  dictionary_manager: db_interfaces.IDBDictionaryManager;
-
   // Define the custom properties we need to operate
   connection_pool: Pool;
 
@@ -25,14 +23,18 @@ export class PostGresDBProvider implements db_interfaces.IDBProviderInterface {
 
   /* Construct the DBprovider using the values passed in 
    - we are simulating named paramters using an Interface */
-  constructor({
-    type,
-    hostName,
-    port,
-    databaseName,
-    userName,
-    password,
-  }: db_interfaces.TDBProviderConstructor) {
+  constructor(
+    {
+      type,
+      hostName,
+      port,
+      databaseName,
+      userName,
+      password,
+    }: db_interfaces.TDBProviderConstructor,
+    @Inject(DICTIONARY_MANAGER)
+    private dictionary_manager: PostgresDictionaryManager,
+  ) {
     // Set the properties to what was passed in
     this.type = type;
     this.hostName = hostName;
@@ -49,9 +51,6 @@ export class PostGresDBProvider implements db_interfaces.IDBProviderInterface {
       port: this.port,
       password: this.password,
     });
-
-    // Setup the dictionary manager we will use
-    this.dictionary_manager = new PostGresDictionaryManager(this);
   }
 
   query(tableName: string): object {

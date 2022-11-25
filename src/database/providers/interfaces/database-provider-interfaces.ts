@@ -1,3 +1,5 @@
+import { PostgresDictionaryManager } from 'src/database/dictionary_managers';
+
 /* Interface that all DBProviders must adhere to */
 export interface IDBProviderInterface {
   // Some common variables
@@ -8,23 +10,16 @@ export interface IDBProviderInterface {
   databaseName: string;
   userName: string;
   password: string;
-  dictionary_manager: IDBDictionaryManager;
 
   // Public methods
   // - all concrete classes must have
   showConfig(): object;
 }
 
-/* Interface for DictionaryManagers */
-export interface IDBDictionaryManager {
-  // Public Properties
-  tables: Array<IDictionaryTable>;
-
-  // Public Methods
-  // - all concrete classes must have
-  loadTable(table_alias: string): IDictionaryTable;
-  cachedTable(table_alias: string): boolean;
-}
+export type TDBFieldAndValue = {
+  fieldName: string;
+  fieldValue: any;
+};
 
 export type TDBProviderConstructor = {
   type: string;
@@ -34,27 +29,3 @@ export type TDBProviderConstructor = {
   userName: string;
   password: string;
 };
-
-export type TDBFieldAndValue = {
-  fieldName: string;
-  fieldValue: any;
-};
-
-export type IDictionaryTable = {
-  id: number;
-  alias: string;
-  name: string;
-  description: string;
-  columns: Array<IDictionaryField>;
-};
-
-export interface IDictionaryField {
-  id: number;
-  alias: string;
-  name: string;
-  description: string;
-  type: string;
-  length: number;
-  precison: number;
-  scale: number;
-}

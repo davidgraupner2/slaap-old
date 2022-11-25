@@ -1,7 +1,8 @@
-import { DB_CONNECTION } from './constants';
+import { DB_CONNECTION, DICTIONARY_MANAGER } from './constants';
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from 'src/config/config.service';
 import { PostGresDBProvider } from './providers';
+import { PostgresDictionaryManager } from './dictionary_managers';
 
 const dbProvider = {
   provide: DB_CONNECTION,
@@ -23,9 +24,29 @@ const dbProvider = {
   inject: [ConfigService],
 };
 
+const dictionaryManager = {
+  provide: DICTIONARY_MANAGER,
+  useFactory: (configService: ConfigService) => {
+    /* Return the correct Dictionary Manager
+     - Based on the type that has been requested */
+    if (configService.get('db_dictionary_type').toUpperCase() == 'POSTGRES') {
+      // We are concifured to use PostGres
+      return new PostgresDictionaryManager({
+        type: configService.get('db_dictionary_type'),
+        hostName: configService.get('db_dictionary_host_name'),
+        port: parseInt(configService.get('db_dictionary_port')),
+        databaseName: configService.get('db_dictionary_database_name'),
+        userName: configService.get('db_dictionary_user_name'),
+        password: configService.get('db_dictionary_password'),
+      });
+    }
+  },
+  inject: [ConfigService],
+};
+
 @Global()
 @Module({
-  providers: [dbProvider],
-  exports: [dbProvider],
+  providers: [dbProvider, dictionaryManager],
+  exports: [dbProvider, dictionaryManager],
 })
 export class DBModule {}
