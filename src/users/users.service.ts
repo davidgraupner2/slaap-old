@@ -1,14 +1,23 @@
 import { Injectable, Inject } from '@nestjs/common';
+import { find } from 'rxjs';
 import { DB_CONNECTION } from 'src/database/constants';
 
 export type User = any;
 
 @Injectable()
 export class UsersService {
+  // Store the tableName - where this object is stored
+  tableName = 'public.user';
+
   constructor(@Inject(DB_CONNECTION) private dbProvider: any) {}
 
   // Get a user by their email address
   async findUserByEmail(email: string): Promise<User | undefined> {
+    const findUser = this.dbProvider
+      .findFirst(this.tableName)
+      .where({ fieldName: 'username', fieldValue: email });
+    findUser.execute();
+
     return this.dbProvider.executeQueryText(
       `select * from public.user where username='${email}'`,
     );

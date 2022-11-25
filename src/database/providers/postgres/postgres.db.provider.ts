@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { IDBProviderInterface, constructorInterface } from '../interfaces';
+import * as db_interfaces from '../interfaces';
 import { Pool } from 'pg';
+import { PostGresDictionaryManager } from './postgres.dictionary.manager';
 
 @Injectable()
-export class PostGresDBProvider implements IDBProviderInterface {
+export class PostGresDBProvider implements db_interfaces.IDBProviderInterface {
   /* Define the properties we need 
   - as per the IDBProviderInterface */
   type: string;
@@ -12,6 +13,9 @@ export class PostGresDBProvider implements IDBProviderInterface {
   databaseName: string;
   userName: string;
   password: string;
+
+  // Declare the Dictionary Manager
+  dictionary_manager: db_interfaces.IDBDictionaryManager;
 
   // Define the custom properties we need to operate
   connection_pool: Pool;
@@ -28,7 +32,7 @@ export class PostGresDBProvider implements IDBProviderInterface {
     databaseName,
     userName,
     password,
-  }: constructorInterface) {
+  }: db_interfaces.TDBProviderConstructor) {
     // Set the properties to what was passed in
     this.type = type;
     this.hostName = hostName;
@@ -45,11 +49,18 @@ export class PostGresDBProvider implements IDBProviderInterface {
       port: this.port,
       password: this.password,
     });
+
+    // Setup the dictionary manager we will use
+    this.dictionary_manager = new PostGresDictionaryManager(this);
   }
 
   query(tableName: string): object {
     console.log('Getting new Query Object ' + tableName);
     return new Query(tableName);
+  }
+
+  findFirst(tableName: string): Object {
+    return new findFirst(tableName);
   }
 
   /*Show the current configuration, 
@@ -117,10 +128,62 @@ export class PostGresDBProvider implements IDBProviderInterface {
   }
 }
 
+class findFirst {
+  // Local properties we need
+  private columns = ['*'];
+  private tableName = '';
+  private whereClause = [];
+
+  constructor(tableName: string) {
+    // Update local properties with values passed in
+    this.tableName = tableName;
+  }
+
+  addColumn(name: string): findFirst {
+    // Add the column to the column list - if its not there already
+    if (!this.columns.includes(name)) {
+      this.columns.push(name);
+    }
+
+    return this;
+  }
+
+  where(params: db_interfaces.TDBFieldAndValue): findFirst {
+    // Add a (AND) whereclause to the list
+    if (!this.whereClause) {
+      this.whereClause.push(`${params.fieldName} = ${params.fieldValue}`);
+    } else {
+      this.whereClause.push(`and ${params.fieldName} = ${params.fieldValue}`);
+    }
+
+    return this;
+  }
+
+  addOr(fieldName: string, value: any): findFirst {
+    // Add a (OR) whereclause to the list
+    if (!this.whereClause) {
+      this.whereClause.push(`${fieldName} = ${value}`);
+    } else {
+      this.whereClause.push(`or ${fieldName} = ${value}`);
+    }
+
+    return this;
+  }
+
+  execute() {
+    console.log(
+      'Executing: ' +
+        `select ${String(this.columns)} from ${this.tableName} where ${String(
+          this.whereClause,
+        )}`,
+    );
+  }
+}
+
 class Query {
   // Properties we need
-  columns = [];
-  table = '';
+  private columns = [];
+  private table = '';
 
   constructor(tableName: string) {
     // Update local properties with values passed in
@@ -128,7 +191,7 @@ class Query {
     this.table = tableName;
   }
 
-  addColumn(name: string) {
+  addColumn(name: string): Query {
     console.log('Adding New Column');
     // Add the column to the column list - if its not there already
     if (!this.columns.includes(name)) {
