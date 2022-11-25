@@ -18,29 +18,10 @@ export class AuthService {
     private readonly logger: Logger,
   ) {}
 
-  // async register(dto: userDTO) {
-  //   return this.dbProvider.doInsert(
-  //     'root.user',
-  //     ['email_address', 'password_hash'],
-  //     [`'${dto.email}'`, `'${dto.password}'`],
-  //   );
-  //   return {
-  //     User: dto.email,
-  //     Password: dto.password,
-  //   };
-  // }
-
   @LogEntryExit
   async validateUser(email: string, password: string) {
     // Request the user details that match the username / email
     // - leveraging the usersService
-
-    console.log('Email ', email);
-    console.log('Pwd ', password);
-    this.logger.error({
-      message: 'This is a error',
-      context: this.constructor.name,
-    });
 
     const user = await this.usersService.findUserByEmail(email);
 
@@ -56,12 +37,6 @@ export class AuthService {
     if (!passwordMatch) {
       return undefined;
     }
-
-    const q = this.dbProvider
-      .query('testtable')
-      .addColumn('test')
-      .addColumn('test2')
-      .execute();
 
     // If we get here - return the user
     // return this.signedToken(user.id, user.email);
@@ -135,19 +110,13 @@ export class AuthService {
     }
 
     // Compare the current refresh token to the one we have recorded against the user record
-    console.log('User: ' + user[0].refreshtoken);
-    console.log('Same? ' + refreshToken);
-
     const refreshTokenMatches = await argon.verify(
       user[0].refreshtoken,
       refreshToken,
     );
 
-    console.log('Start');
     // Refresh token do not match - deny the request to refresh the access token
     if (!refreshTokenMatches) throw new ForbiddenException(ACCESS_DENIED);
-
-    console.log('End');
 
     // Refresh tokens match - get new tokens
     const tokens = await this.getTokens(user[0].id, user[0].email);
