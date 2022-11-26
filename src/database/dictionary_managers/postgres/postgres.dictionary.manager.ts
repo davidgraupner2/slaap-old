@@ -1,56 +1,32 @@
 import {
   IDictionaryManager,
   IDictionaryTable,
-  TDictionaryManagerConstructor,
+  // TDictionaryManagerConstructor,
 } from '../interfaces';
 import { Pool } from 'pg';
+import { IDBProviderInterface } from 'src/database/providers/interfaces';
 
 export class PostgresDictionaryManager implements IDictionaryManager {
-  /* Define the properties we need 
-  - as per the Interface */
-  type: string;
-  hostName: string;
-  port: number;
-  databaseName: string;
-  userName: string;
-  password: string;
-
   // Define the custom properties we need to operate
-  connection_pool: Pool;
-
-  /* Construct the DBprovider using the values passed in 
-   - we are simulating named paramters using an Interface */
-  constructor({
-    type,
-    hostName,
-    port,
-    databaseName,
-    userName,
-    password,
-  }: TDictionaryManagerConstructor) {
-    // Set the properties to what was passed in
-    this.type = type;
-    this.hostName = hostName;
-    this.port = port;
-    this.databaseName = databaseName;
-    this.userName = userName;
-    this.password = password;
-
-    // Setup the connection pool we will use
-    this.connection_pool = new Pool({
-      user: this.userName,
-      host: this.hostName,
-      database: this.databaseName,
-      port: this.port,
-      password: this.password,
-    });
-  }
+  database_provider: IDBProviderInterface;
 
   // List of tables that are loaded and managed
   tables: IDictionaryTable[];
 
+  // Stores the Database connect
+  // In Potsgres case - a database pool
+  // setupDatabasebaseProvider(database_provider: IDBProviderInterface) {
+  //   this.database_provider = database_provider;
+  // }
+
+  setupDatabaseProvider(database_provider: IDBProviderInterface): void {
+    this.database_provider = database_provider;
+  }
+
   loadTable(table_alias: string): IDictionaryTable {
-    throw new Error('Method not implemented.');
+    console.log('Loading Table');
+    return undefined;
+    // throw new Error('Method not implemented.');
     // if (this.cachedTable(table_alias)) {
     //   return this.tables.find((table) => {
     //     table.alias === table_alias.toUpperCase();

@@ -28,4 +28,5 @@ export type TDBProviderConstructor = {
   databaseName: string;
   userName: string;
   password: string;
+  dictionary_manager: PostgresDictionaryManager;
 };

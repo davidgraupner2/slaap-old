@@ -5,7 +5,9 @@ import { PostgresDictionaryManager } from 'src/database/dictionary_managers';
 import { DICTIONARY_MANAGER } from 'src/database/constants';
 
 @Injectable()
-export class PostGresDBProvider implements db_interfaces.IDBProviderInterface {
+export class PostGresDatabaseProvider
+  implements db_interfaces.IDBProviderInterface
+{
   /* Define the properties we need 
   - as per the IDBProviderInterface */
   type: string;
@@ -19,22 +21,19 @@ export class PostGresDBProvider implements db_interfaces.IDBProviderInterface {
   connection_pool: Pool;
 
   // Create a new logging instance
-  private readonly logger = new Logger(PostGresDBProvider.name);
+  private readonly logger = new Logger(PostGresDatabaseProvider.name);
 
   /* Construct the DBprovider using the values passed in 
    - we are simulating named paramters using an Interface */
-  constructor(
-    {
-      type,
-      hostName,
-      port,
-      databaseName,
-      userName,
-      password,
-    }: db_interfaces.TDBProviderConstructor,
-    @Inject(DICTIONARY_MANAGER)
-    private dictionary_manager: PostgresDictionaryManager,
-  ) {
+  constructor({
+    type,
+    hostName,
+    port,
+    databaseName,
+    userName,
+    password,
+    dictionary_manager,
+  }: db_interfaces.TDBProviderConstructor) {
     // Set the properties to what was passed in
     this.type = type;
     this.hostName = hostName;
@@ -51,6 +50,10 @@ export class PostGresDBProvider implements db_interfaces.IDBProviderInterface {
       port: this.port,
       password: this.password,
     });
+
+    // Setup the dictionary manager with this database provider
+    dictionary_manager.setupDatabaseProvider(this);
+    dictionary_manager.loadTable('dsd');
   }
 
   query(tableName: string): object {

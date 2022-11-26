@@ -6,7 +6,10 @@ import { PostgresDictionaryManager } from './dictionary_managers';
 
 const dbProvider = {
   provide: DB_CONNECTION,
-  useFactory: (configService: ConfigService) => {
+  useFactory: (
+    configService: ConfigService,
+    dictmanager: PostgresDictionaryManager,
+  ) => {
     /* Return the correct DB Provider
      - Based on the type that has been requested */
     if (configService.get('db_type').toUpperCase() == 'POSTGRES') {
@@ -18,35 +21,18 @@ const dbProvider = {
         databaseName: configService.get('db_database_name'),
         userName: configService.get('db_user_name'),
         password: configService.get('db_password'),
+        dictionary_manager: dictmanager,
       });
     }
   },
-  inject: [ConfigService],
-};
-
-const dictionaryManager = {
-  provide: DICTIONARY_MANAGER,
-  useFactory: (configService: ConfigService) => {
-    /* Return the correct Dictionary Manager
-     - Based on the type that has been requested */
-    if (configService.get('db_dictionary_type').toUpperCase() == 'POSTGRES') {
-      // We are concifured to use PostGres
-      return new PostgresDictionaryManager({
-        type: configService.get('db_dictionary_type'),
-        hostName: configService.get('db_dictionary_host_name'),
-        port: parseInt(configService.get('db_dictionary_port')),
-        databaseName: configService.get('db_dictionary_database_name'),
-        userName: configService.get('db_dictionary_user_name'),
-        password: configService.get('db_dictionary_password'),
-      });
-    }
-  },
-  inject: [ConfigService],
+  // Inject the class to read the configuration
+  // - as well as the Dictionary Manager
+  inject: [ConfigService, PostgresDictionaryManager],
 };
 
 @Global()
 @Module({
-  providers: [dbProvider, dictionaryManager],
-  exports: [dbProvider, dictionaryManager],
+  providers: [dbProvider, PostgresDictionaryManager],
+  exports: [dbProvider, PostgresDictionaryManager],
 })
 export class DBModule {}

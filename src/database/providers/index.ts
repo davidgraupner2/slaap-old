@@ -1,1 +1,1 @@
-export { PostGresDBProvider } from './postgres/postgres.db.provider';
+export { PostGresDatabaseProvider as PostGresDBProvider } from './postgres/postgres.database.provider';
