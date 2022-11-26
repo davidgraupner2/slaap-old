@@ -3,6 +3,8 @@ import * as db_interfaces from '../interfaces';
 import { Pool } from 'pg';
 import { PostgresDictionaryManager } from 'src/database/dictionary_managers';
 import { DICTIONARY_MANAGER } from 'src/database/constants';
+import { ConfigService } from 'src/config/config.service';
+import { findMany } from './postgres.findmany';
 
 @Injectable()
 export class PostGresDatabaseProvider
@@ -16,6 +18,9 @@ export class PostGresDatabaseProvider
   databaseName: string;
   userName: string;
   password: string;
+
+  // Configuration service to use to read configuration parameters
+  config_service: ConfigService;
 
   // Define the custom properties we need to operate
   connection_pool: Pool;
@@ -32,6 +37,7 @@ export class PostGresDatabaseProvider
     databaseName,
     userName,
     password,
+    config_service,
     dictionary_manager,
   }: db_interfaces.TDBProviderConstructor) {
     // Set the properties to what was passed in
@@ -41,6 +47,9 @@ export class PostGresDatabaseProvider
     this.databaseName = databaseName;
     this.userName = userName;
     this.password = password;
+
+    // Save the Configuration Service Locally
+    this.config_service = config_service;
 
     // Setup the connection pool we will use
     this.connection_pool = new Pool({
@@ -52,13 +61,21 @@ export class PostGresDatabaseProvider
     });
 
     // Setup the dictionary manager with this database provider
-    dictionary_manager.setupDatabaseProvider(this);
-    dictionary_manager.loadTable('dsd');
+    dictionary_manager.initialise(
+      this,
+      this.config_service.get('dictionary_table'),
+      this.config_service.get('dictionary_field_table'),
+    );
+    dictionary_manager.loadTables();
   }
 
   query(tableName: string): object {
     console.log('Getting new Query Object ' + tableName);
     return new Query(tableName);
+  }
+
+  findMany(tableName: string): Object {
+    return new findMany(tableName);
   }
 
   findFirst(tableName: string): Object {

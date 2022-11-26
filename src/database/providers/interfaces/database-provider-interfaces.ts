@@ -1,3 +1,4 @@
+import { ConfigService } from 'src/config/config.service';
 import { PostgresDictionaryManager } from 'src/database/dictionary_managers';
 
 /* Interface that all DBProviders must adhere to */
@@ -14,6 +15,7 @@ export interface IDBProviderInterface {
   // Public methods
   // - all concrete classes must have
   showConfig(): object;
+  findMany(table_name: string): any;
 }
 
 export type TDBFieldAndValue = {
@@ -28,5 +30,6 @@ export type TDBProviderConstructor = {
   databaseName: string;
   userName: string;
   password: string;
+  config_service: ConfigService;
   dictionary_manager: PostgresDictionaryManager;
 };

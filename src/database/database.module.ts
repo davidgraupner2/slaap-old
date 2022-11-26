@@ -21,6 +21,7 @@ const dbProvider = {
         databaseName: configService.get('db_database_name'),
         userName: configService.get('db_user_name'),
         password: configService.get('db_password'),
+        config_service: configService,
         dictionary_manager: dictmanager,
       });
     }
