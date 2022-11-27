@@ -1,12 +1,15 @@
-import { Timestamp } from 'rxjs';
-import { urlToHttpOptions } from 'url';
-import { DatabaseColumn } from './database.column';
+// import { DatabaseColumn } from './database.column';
+// import { DatabaseColumns } from './database.columns';
 import { DatabaseColumns } from './database.columns';
+import { DatabaseColumnType } from './types/database.column.type.generic';
+import { DatabaseColumnTypeInterface } from './types/database.column.type.interface';
+import { DatabaseColumnTypeNumber } from './types/database.column.type.number';
+import { DatabaseColumnTypeString } from './types/database.column.type.string';
 
 export class DataBaseTable {
   // Common Table variables
   private _name: string;
-  private _columns: DatabaseColumns;
+  private _columns: DatabaseColumns<T>;
   private _id: number;
   private _created: number;
   private _updated: number;
@@ -36,7 +39,7 @@ export class DataBaseTable {
     this._updated_by = updated_by;
 
     // Create a new instance of the DB Columns
-    this._columns = new DatabaseColumns();
+    // this._columns = new Array<DatabaseColumnTypeInterface>();
   }
 
   public get name() {
@@ -47,18 +50,34 @@ export class DataBaseTable {
     this._name = newTableName;
   }
 
+  public addColumn(column: DatabaseColumnTypeNumber): any {
+    this._columns.push(column);
+
+    return column;
+  }
+
   // Provide access to the Columns
   public columns() {
     return this._columns;
   }
 
   // Provide access to a specific column
-  public column(columnName: string): DatabaseColumn {
-    return this._columns.get(columnName);
-  }
+  // public column(columnName: string): DatabaseColumn {
+  //   return this._columns.get(columnName);
+  // }
 
   // Returns the select statement based on the current data loaded
   public selectQuery() {
-    return `select ${this._columns.toString()} from ${this._name}`;
+    if (this._columns.length === 0) {
+      return `'select * from ${this.name}`;
+    } else {
+      console.log(this._columns.length);
+      this._columns.forEach((column) => {
+        console.log(column.columnName);
+      });
+      return `select ${String(
+        this._columns.map((column) => column.columnName),
+      )} from ${this.name}`;
+    }
   }
 }
