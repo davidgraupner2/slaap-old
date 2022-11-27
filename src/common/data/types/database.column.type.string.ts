@@ -1,61 +1,60 @@
-import { DatabaseColumnTypeRoot } from './database.column.type.root';
+import { ConsoleLogger } from '@nestjs/common';
+import { DatabaseColumnTypeInterface } from './database.column.type.interface';
+import { DatabaseColumnDataTypes } from './database.enums';
 
-// String Database Type
-export class DatabaseColumnTypeString extends DatabaseColumnTypeRoot {
+export class DatabaseColumnTypeString
+  implements DatabaseColumnTypeInterface<DatabaseColumnTypeString>
+{
   constructor(
-    name: string,
+    private name: string,
     comment: string,
     length: number,
     allowNull: boolean,
     value?: string,
-  ) {
-    // Setup the parameters for a string data type
-    super(
-      name,
-      DatabaseColumnDataTypes.string,
-      comment,
-      allowNull,
-      false,
-      length,
-      false,
-      value,
-    );
+  ) {}
+
+  value: any;
+  selectQuery(): string {
+    throw new Error('Method not implemented.');
   }
 
-  // Override the getters / setters we want to expose
-  public override get name(): string {
+  opp() {
+    console.log('opp');
+  }
+
+  public get type(): DatabaseColumnDataTypes {
+    return DatabaseColumnDataTypes.string;
+  }
+
+  public get columnName(): string {
     return this.name;
   }
 
-  public override set name(newName: string) {
+  public set columnName(newName: string) {
     this.name = newName;
   }
 
-  public override get comment(): string {
+  public get comment(): string {
     return this.comment;
   }
 
-  public override set comment(newComment: string) {
+  public set comment(newComment: string) {
     this.comment = newComment;
   }
 
-  public override get type(): DatabaseColumnDataTypes {
-    return this.type;
-  }
-
-  public override get allowNull(): boolean {
+  public get allowNull(): boolean {
     return this.allowNull;
   }
 
-  public override set allowNull(newAllowNull: boolean) {
+  public set allowNull(newAllowNull: boolean) {
     this.allowNull = newAllowNull;
   }
 
-  public override get length(): number {
+  public get length(): number {
     return this.length;
   }
 
-  public override set length(newLength: number) {
+  public set length(newLength: number) {
     this.length = newLength;
   }
 }

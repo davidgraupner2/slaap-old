@@ -1,78 +1,80 @@
-// This class defines the root class for all database types
-// - other database column types should extend this type
-export abstract class DatabaseColumnTypeRoot {
-  constructor(
-    private _name: string,
-    private _type: DatabaseColumnDataTypes = DatabaseColumnDataTypes.string,
-    private _comment: string = '',
-    private _allowNull: boolean = true,
-    private _primary_key: boolean = false,
-    private _length: number = 25,
-    private _identity: boolean = false,
-    private _value: any,
-  ) {}
+// import { DatabaseColumnDataTypes } from './database.enums';
 
-  public get name(): string {
-    return this._name;
-  }
+// // This class defines the root class for all database types
+// // - other database column types should extend this type
+// export abstract class DatabaseColumnTypeRoot implements DatabaseColumnTypeInterface {
+//   constructor(
+//     private _name: string,
+//     private _type: DatabaseColumnDataTypes = DatabaseColumnDataTypes.string,
+//     private _comment: string = '',
+//     private _allowNull: boolean = true,
+//     private _primary_key: boolean = false,
+//     private _length: number = 25,
+//     private _identity: boolean = false,
+//     private _value: any,
+//   ) {}
 
-  protected set name(newName: string) {
-    this._name = newName;
-  }
+//   public get name(): string {
+//     return this._name;
+//   }
 
-  protected get comment(): string {
-    return this._comment;
-  }
+//   protected set name(newName: string) {
+//     this._name = newName;
+//   }
 
-  protected set comment(newComment: string) {
-    this._comment = newComment;
-  }
+//   protected get comment(): string {
+//     return this._comment;
+//   }
 
-  protected get type(): DatabaseColumnDataTypes {
-    return this._type;
-  }
+//   protected set comment(newComment: string) {
+//     this._comment = newComment;
+//   }
 
-  protected set type(newType: DatabaseColumnDataTypes) {
-    this._type = newType;
-  }
+//   protected get type(): DatabaseColumnDataTypes {
+//     return this._type;
+//   }
 
-  protected get allowNull(): boolean {
-    return this._allowNull;
-  }
+//   protected set type(newType: DatabaseColumnDataTypes) {
+//     this._type = newType;
+//   }
 
-  protected set allowNull(newAllowNull: boolean) {
-    this._allowNull = newAllowNull;
-  }
+//   protected get allowNull(): boolean {
+//     return this._allowNull;
+//   }
 
-  protected get primaryKey(): boolean {
-    return this._primary_key;
-  }
+//   protected set allowNull(newAllowNull: boolean) {
+//     this._allowNull = newAllowNull;
+//   }
 
-  protected set primaryKey(newPrimaryKey: boolean) {
-    this._primary_key = newPrimaryKey;
-  }
+//   protected get primaryKey(): boolean {
+//     return this._primary_key;
+//   }
 
-  protected get length(): number {
-    return this._length;
-  }
+//   protected set primaryKey(newPrimaryKey: boolean) {
+//     this._primary_key = newPrimaryKey;
+//   }
 
-  protected set length(newLength: number) {
-    this._length = newLength;
-  }
+//   protected get length(): number {
+//     return this._length;
+//   }
 
-  protected get identity(): boolean {
-    return this._identity;
-  }
+//   protected set length(newLength: number) {
+//     this._length = newLength;
+//   }
 
-  protected set identity(newIdentity: boolean) {
-    this._identity = newIdentity;
-  }
+//   protected get identity(): boolean {
+//     return this._identity;
+//   }
 
-  protected get value(): any {
-    return this._value;
-  }
+//   protected set identity(newIdentity: boolean) {
+//     this._identity = newIdentity;
+//   }
 
-  protected set value(newValue: any) {
-    this._value = newValue;
-  }
-}
+//   protected get value(): any {
+//     return this._value;
+//   }
+
+//   protected set value(newValue: any) {
+//     this._value = newValue;
+//   }
+// }

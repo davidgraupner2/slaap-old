@@ -1,21 +1,20 @@
-import { elementAt } from 'rxjs';
-import { DatabaseColumn } from './database.column';
-import { DatabaseColumnTypeRoot } from './types/database.column.type.root';
+import { DatabaseColumnTypeInterface } from './types/database.column.type.interface';
+import { DatabaseColumnTypeString } from './types/database.column.type.string';
 
-export class DatabaseColumns {
+export class DatabaseColumns<T extends DatabaseColumnTypeInterface> {
   // Store an array of Database Columns
-  private _columns: Array<DatabaseColumn>;
+  private _columns: Array<T>;
 
   constructor() {
     // Initialise a new blank array of database tables
-    this._columns = new Array<DatabaseColumn>();
+    this._columns = new Array<T>();
 
     // By default - add a wildcard as the first column
     // this.add('*');
   }
 
   // Add a new database column into the array
-  public add(column: DatabaseColumnTypeRoot): DatabaseColumns {
+  public add(column: T): void {
     if (this._columns.some((element) => element.name === column.name)) {
       // don't add duplicates
       return;
@@ -28,24 +27,20 @@ export class DatabaseColumns {
     if (this._columns.length > 1) {
       this.remove('*');
     }
-
-    return this;
   }
 
   // Removes an element from the columns array
   // - if it matches the column name passed in
-  public remove(columnName: string): DatabaseColumns {
+  public remove(columnName: string): void {
     for (var index = 0; index < this._columns.length; index++) {
       if (this._columns[index].name === columnName) {
         this._columns.splice(index, 1);
       }
     }
-
-    return this;
   }
 
   // Return the DatabaseColumn that matches the column name passed in
-  public get(columnName: string): DatabaseColumn {
+  public get(columnName: string): DatabaseColumnTypeInterface {
     return this._columns.find((element) => element.name === columnName);
   }
 
