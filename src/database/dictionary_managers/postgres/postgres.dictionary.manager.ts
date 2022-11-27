@@ -4,6 +4,7 @@ import { IDBProviderInterface } from 'src/database/providers/interfaces';
 import { ConfigService } from 'src/config/config.service';
 import { DataBaseTable } from 'src/common/data/database.table';
 import { DatabaseColumn } from 'src/common/data/database.column';
+import { DatabaseColumnTypeString } from 'src/common/data/types/database.column.type.string';
 
 export class PostgresDictionaryManager implements IDictionaryManager {
   constructor(private configService: ConfigService) {}
@@ -44,11 +45,13 @@ export class PostgresDictionaryManager implements IDictionaryManager {
     // this.database_provider.findMany(this.dictionary_table_name).execute();
 
     const t = new DataBaseTable('test');
-    t.columns().add('Me').add('No').add('Jo').remove('No');
+    t.columns().add(
+      new DatabaseColumnTypeString('test2', '', 24, false, 'Hello'),
+    );
     console.log(t.selectQuery());
 
-    console.log(t.columns().get('Me'));
-    console.log(t.columns().get('Me2'));
+    // console.log(t.columns().get('Me'));
+    // console.log(t.columns().get('Me2'));
 
     return undefined;
   }

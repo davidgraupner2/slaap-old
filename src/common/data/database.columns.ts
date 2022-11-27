@@ -1,5 +1,6 @@
 import { elementAt } from 'rxjs';
 import { DatabaseColumn } from './database.column';
+import { DatabaseColumnTypeRoot } from './types/database.column.type.root';
 
 export class DatabaseColumns {
   // Store an array of Database Columns
@@ -10,18 +11,18 @@ export class DatabaseColumns {
     this._columns = new Array<DatabaseColumn>();
 
     // By default - add a wildcard as the first column
-    this.add('*');
+    // this.add('*');
   }
 
   // Add a new database column into the array
-  public add(columnName: string): DatabaseColumns {
-    if (this._columns.some((element) => element.name === columnName)) {
+  public add(column: DatabaseColumnTypeRoot): DatabaseColumns {
+    if (this._columns.some((element) => element.name === column.name)) {
       // don't add duplicates
       return;
     }
 
     // If we get here, it does not exist - add it
-    this._columns.push(new DatabaseColumn(columnName));
+    this._columns.push(column);
 
     // if we have more than 1 column and there is a wildcard column, remove it
     if (this._columns.length > 1) {
