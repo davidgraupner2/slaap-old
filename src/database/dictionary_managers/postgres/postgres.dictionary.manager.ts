@@ -2,6 +2,8 @@ import { IDictionaryManager, IDictionaryTable } from '../interfaces';
 import { Pool } from 'pg';
 import { IDBProviderInterface } from 'src/database/providers/interfaces';
 import { ConfigService } from 'src/config/config.service';
+import { DataBaseTable } from 'src/common/data/database.table';
+import { DatabaseColumn } from 'src/common/data/database.column';
 
 export class PostgresDictionaryManager implements IDictionaryManager {
   constructor(private configService: ConfigService) {}
@@ -39,7 +41,14 @@ export class PostgresDictionaryManager implements IDictionaryManager {
   // - caches them
   loadTables(): Array<IDictionaryTable> {
     // Get the list of tables to load
-    this.database_provider.findMany(this.dictionary_table_name).execute();
+    // this.database_provider.findMany(this.dictionary_table_name).execute();
+
+    const t = new DataBaseTable('test');
+    t.columns().add('Me').add('No').add('Jo').remove('No');
+    console.log(t.selectQuery());
+
+    console.log(t.columns().get('Me'));
+    console.log(t.columns().get('Me2'));
 
     return undefined;
   }
