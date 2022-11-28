@@ -1,8 +1,10 @@
 import { DB_CONNECTION, DICTIONARY_MANAGER } from './constants';
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from 'src/config/config.service';
-import { PostGresDBProvider } from './providers';
-import { PostgresDictionaryManager } from './dictionary_managers';
+import {
+  DatabaseProvider as PostGresDatabaseProvider,
+  DictionaryManager as PostgresDictionaryManager,
+} from 'src/database/providers/postgres';
 
 const dbProvider = {
   provide: DB_CONNECTION,
@@ -14,7 +16,7 @@ const dbProvider = {
      - Based on the type that has been requested */
     if (configService.get('db_type').toUpperCase() == 'POSTGRES') {
       // We are concifured to use PostGres
-      return new PostGresDBProvider({
+      return new PostGresDatabaseProvider({
         type: configService.get('db_type'),
         hostName: configService.get('db_host_name'),
         port: parseInt(configService.get('db_port')),

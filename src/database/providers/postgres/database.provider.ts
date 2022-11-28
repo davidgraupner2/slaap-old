@@ -1,15 +1,13 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import * as db_interfaces from '../interfaces';
+import * as db_interfaces from '../../interfaces';
 import { Pool } from 'pg';
-import { PostgresDictionaryManager } from 'src/database/dictionary_managers';
+import { DictionaryManager } from 'src/database/providers/postgres';
 import { DICTIONARY_MANAGER } from 'src/database/constants';
 import { ConfigService } from 'src/config/config.service';
-import { findMany } from './postgres.findmany';
+import { findMany } from './database.provider.findmany';
 
 @Injectable()
-export class PostGresDatabaseProvider
-  implements db_interfaces.IDBProviderInterface
-{
+export class DatabaseProvider implements db_interfaces.IDatabaseProvider {
   /* Define the properties we need 
   - as per the IDBProviderInterface */
   type: string;
@@ -26,7 +24,7 @@ export class PostGresDatabaseProvider
   connection_pool: Pool;
 
   // Create a new logging instance
-  private readonly logger = new Logger(PostGresDatabaseProvider.name);
+  private readonly logger = new Logger(DatabaseProvider.name);
 
   /* Construct the DBprovider using the values passed in 
    - we are simulating named paramters using an Interface */
@@ -39,7 +37,7 @@ export class PostGresDatabaseProvider
     password,
     config_service,
     dictionary_manager,
-  }: db_interfaces.TDBProviderConstructor) {
+  }: db_interfaces.TDatabaseProviderConstructor) {
     // Set the properties to what was passed in
     this.type = type;
     this.hostName = hostName;
@@ -167,7 +165,7 @@ class findFirst {
     return this;
   }
 
-  where(params: db_interfaces.TDBFieldAndValue): findFirst {
+  where(params: db_interfaces.TDatabaseFieldAndValue): findFirst {
     // Add a (AND) whereclause to the list
     if (!this.whereClause) {
       this.whereClause.push(`${params.fieldName} = ${params.fieldValue}`);

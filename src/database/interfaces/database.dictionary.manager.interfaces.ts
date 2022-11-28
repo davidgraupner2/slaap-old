@@ -1,12 +1,12 @@
 /* This file contains the interfaces and types that dictionary managers should adhere to */
 /* Interface for DictionaryManagers */
 
-import { IDBProviderInterface } from 'src/database/providers/interfaces';
+import { IDatabaseProvider } from 'src/database/interfaces';
 
 // Defines the public interface for the Database Dictionary Manager
 // - The Data Dictionary stores and retrieves the platforms data structure
 // - in the database and governs the behavior of the Database Provider
-export interface IDictionaryManager {
+export interface IDatabaseDictionaryManager {
   ///////////////////////////////////////////////
   // Local data
   // - All concrete classes must have
@@ -14,7 +14,7 @@ export interface IDictionaryManager {
 
   // The Dictionary manager will store an array of tables
   // the have been loaded into cache
-  tables: Array<IDictionaryTable>;
+  tables: Array<IDatabaseDictionaryTable>;
 
   // The Dictionary manager will store the name of the database
   // tables where the data definitions are stored
@@ -29,24 +29,24 @@ export interface IDictionaryManager {
   // Sets up the dictionary manager with the necessary
   // database provider and class manager table names
   initialise(
-    database_provider: IDBProviderInterface,
+    database_provider: IDatabaseProvider,
     dictionary_table_name: string,
     dictionary_fields_name: string,
   ): void;
 
-  loadTable(table_alias: string): IDictionaryTable;
+  loadTable(table_alias: string): IDatabaseDictionaryTable;
   cachedTable(table_alias: string): boolean;
 }
 
-export type IDictionaryTable = {
+export type IDatabaseDictionaryTable = {
   id: number;
   alias: string;
   name: string;
   description: string;
-  columns: Array<IDictionaryField>;
+  columns: Array<IDatabaseDictionaryField>;
 };
 
-export interface IDictionaryField {
+export interface IDatabaseDictionaryField {
   id: number;
   alias: string;
   name: string;

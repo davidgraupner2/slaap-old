@@ -1,8 +1,8 @@
 import { ConfigService } from 'src/config/config.service';
-import { PostgresDictionaryManager } from 'src/database/dictionary_managers';
+import { DictionaryManager } from 'src/database/providers/postgres';
 
 /* Interface that all DBProviders must adhere to */
-export interface IDBProviderInterface {
+export interface IDatabaseProvider {
   // Some common variables
   // - all concrete classes must have
   type: string;
@@ -18,12 +18,12 @@ export interface IDBProviderInterface {
   findMany(table_name: string): any;
 }
 
-export type TDBFieldAndValue = {
+export type TDatabaseFieldAndValue = {
   fieldName: string;
   fieldValue: any;
 };
 
-export type TDBProviderConstructor = {
+export type TDatabaseProviderConstructor = {
   type: string;
   hostName: string;
   port: number;
@@ -31,5 +31,5 @@ export type TDBProviderConstructor = {
   userName: string;
   password: string;
   config_service: ConfigService;
-  dictionary_manager: PostgresDictionaryManager;
+  dictionary_manager: DictionaryManager;
 };

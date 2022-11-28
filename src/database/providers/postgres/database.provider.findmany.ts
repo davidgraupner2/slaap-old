@@ -1,4 +1,4 @@
-import { TDBFieldAndValue } from '../interfaces';
+import { TDatabaseFieldAndValue } from '../../interfaces';
 
 class databaseColumn {
   name: string = '';
@@ -84,7 +84,7 @@ export class findMany {
     return this;
   }
 
-  where(params: TDBFieldAndValue): findMany {
+  where(params: TDatabaseFieldAndValue): findMany {
     // Add a (AND) whereclause to the list
     if (!this.whereClause) {
       this.whereClause.push(`${params.fieldName} = ${params.fieldValue}`);

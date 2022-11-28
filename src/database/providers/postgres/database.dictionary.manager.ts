@@ -1,20 +1,25 @@
-import { IDictionaryManager, IDictionaryTable } from '../interfaces';
+import {
+  IDatabaseDictionaryManager,
+  IDatabaseDictionaryTable,
+} from 'src/database/interfaces';
 import { Pool } from 'pg';
-import { IDBProviderInterface } from 'src/database/providers/interfaces';
+import { IDatabaseProvider } from 'src/database/interfaces';
 import { ConfigService } from 'src/config/config.service';
-import { DataBaseTable } from 'src/common/data/database.table';
-// import { DatabaseColumn } from 'src/common/data/database.column';
-import { DatabaseColumnTypeString } from 'src/common/data/types/database.column.type.string';
-import { DatabaseColumnTypeNumber } from 'src/common/data/types/database.column.type.number';
+import { DataBaseTable } from 'src/database/providers/postgres';
+import {
+  DatabaseColumnString,
+  DatabaseColumnNumber,
+  DatabaseColumnIdentity,
+} from 'src/database/providers/postgres/types';
 
-export class PostgresDictionaryManager implements IDictionaryManager {
+export class DictionaryManager implements IDatabaseDictionaryManager {
   constructor(private configService: ConfigService) {}
 
   // Define the custom properties we need to operate
-  database_provider: IDBProviderInterface;
+  database_provider: IDatabaseProvider;
 
   // List of tables that are loaded and managed
-  tables: IDictionaryTable[];
+  tables: IDatabaseDictionaryTable[];
 
   // Table - where the table definitions are stored
   dictionary_table_name: string;
@@ -25,7 +30,7 @@ export class PostgresDictionaryManager implements IDictionaryManager {
   // Sets up the Dictionary Manager with the relevant database
   // provider and tables names
   initialise(
-    database_provider: IDBProviderInterface,
+    database_provider: IDatabaseProvider,
     dictionary_table_name: string,
     dictionary_fields_name: string,
   ): void {
@@ -41,19 +46,31 @@ export class PostgresDictionaryManager implements IDictionaryManager {
 
   // Reloads all the tables in the dictionary and
   // - caches them
-  loadTables(): Array<IDictionaryTable> {
+  loadTables(): Array<IDatabaseDictionaryTable> {
     // Get the list of tables to load
     // this.database_provider.findMany(this.dictionary_table_name).execute();
 
-    const t = new DataBaseTable('test');
-    let col1 = t.addColumn(
-      new DatabaseColumnTypeString('firstNam', 'hello', 25, false, '123'),
+    const t = new DataBaseTable('Table');
+    let col1 = t.columns.add(
+      new DatabaseColumnNumber('New_Number', 'This is a number', 10),
     );
-    let col2 = t.addColumn(new DatabaseColumnTypeNumber('number'));
-    col2.opp2();
-    col1.columnName = 'firstName';
-    col1.opp();
-    console.log(typeof col1);
+    let col2 = t.columns.add(new DatabaseColumnIdentity());
+    let col3 = t.columns.add(
+      new DatabaseColumnString('New_String', '', 'Hello'),
+    );
+
+    // col1.value = 'test';
+    // let col2 = t.addColumn(new DatabaseColumnString('TestString'));
+    // col2.value = 122;
+    // t.columns.
+    // let col1 = t.addColumn(
+    //   new DatabaseColumnTypeString('firstNam', 'hello', 25, false, '123'),
+    // );
+    // let col2 = t.addColumn(new DatabaseColumnTypeNumber('number'));
+    // col2.opp2();
+    // col1.columnName = 'firstName';
+    // col1.opp();
+    // console.log(typeof col1);
     console.log(t.selectQuery());
 
     // t.columns().add(
@@ -67,7 +84,7 @@ export class PostgresDictionaryManager implements IDictionaryManager {
     return undefined;
   }
 
-  loadTable(table_alias: string, reload = false): IDictionaryTable {
+  loadTable(table_alias: string, reload = false): IDatabaseDictionaryTable {
     console.log('Loading Table');
     console.log(this.dictionary_fields_name);
     // console.log(this.dictionary_table_name);
