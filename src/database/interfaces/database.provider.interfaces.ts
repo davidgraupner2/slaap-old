@@ -1,3 +1,4 @@
+import { Pool } from 'pg';
 import { ConfigService } from 'src/config/config.service';
 // import { DictionaryManager } from 'src/database/providers/postgres';
 
@@ -7,7 +8,7 @@ export interface ISchemaManager {
   */
 
   // Returns an array of tables the schema manager is aware of
-  tables: Array<IDatabaseTable>;
+  tables(): Array<IDatabaseTable>;
 
   /*
     Public Methods
@@ -25,7 +26,7 @@ export interface ISchemaManager {
     databaseName: string,
     schemaName: string,
     name: string,
-    inheritsFrom?: string,
+    pool: Pool,
   ): IDatabaseTable;
 }
 
@@ -67,7 +68,8 @@ export interface IDatabaseColumn {
   Properties that must be visible on the interface
   */
   name: string;
-  comment: string;
+  description: string;
+  ordinalPosition: number;
   value: any;
 }
 
@@ -75,5 +77,5 @@ export interface IDatabaseTable {
   name: string;
   databaseName: string;
   schemaName: string;
-  columns: Array<IDatabaseColumn>;
+  // columns: Array<IDatabaseColumn>;
 }
