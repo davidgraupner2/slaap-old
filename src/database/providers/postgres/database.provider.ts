@@ -5,17 +5,23 @@ import { DictionaryManager } from 'src/database/providers/postgres';
 import { DICTIONARY_MANAGER } from 'src/database/constants';
 import { ConfigService } from 'src/config/config.service';
 import { findMany } from './database.provider.findmany';
+import { DatabaseProviderSchema } from './database.provider.schema';
+import * as SQLCONSTANTS from 'src/database/providers/postgres/constants';
+import { ConnectableObservable } from 'rxjs';
 
 @Injectable()
 export class DatabaseProvider implements db_interfaces.IDatabaseProvider {
   /* Define the properties we need 
-  - as per the IDBProviderInterface */
+  - as per the Interface */
   type: string;
   hostName: string;
   port: number;
   databaseName: string;
   userName: string;
   password: string;
+
+  // SchemaManager for the database
+  schema_manager: DatabaseProviderSchema;
 
   // Configuration service to use to read configuration parameters
   config_service: ConfigService;
@@ -58,6 +64,8 @@ export class DatabaseProvider implements db_interfaces.IDatabaseProvider {
       password: this.password,
     });
 
+    this.schema_manager = new DatabaseProviderSchema();
+
     // Setup the dictionary manager with this database provider
     dictionary_manager.initialise(
       this,
@@ -65,6 +73,22 @@ export class DatabaseProvider implements db_interfaces.IDatabaseProvider {
       this.config_service.get('dictionary_field_table'),
     );
     dictionary_manager.loadTables();
+
+    this.loadTables();
+  }
+
+  private async loadTables() {
+    const response = await this.connection_pool.query(
+      SQLCONSTANTS.SCHEMA_TABLE_NAMES,
+    );
+
+    response.rows.forEach((element) => {
+      this.schema_manager.addTable(
+        element.table_catalog,
+        element.table_schema,
+        element.table_name,
+      );
+    });
   }
 
   query(tableName: string): object {
