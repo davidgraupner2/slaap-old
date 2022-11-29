@@ -61,7 +61,7 @@ export class DatabaseProvider implements db_interfaces.IDatabaseProvider {
 
     this._schema_manager = new DatabaseProviderSchema(this.connection_pool);
 
-    console.log(this.schema.tables);
+    // console.log(this.schema.tables);
   }
 
   public get schema() {
