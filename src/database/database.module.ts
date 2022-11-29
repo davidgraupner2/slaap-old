@@ -5,6 +5,8 @@ import {
   DatabaseProvider as PostGresDatabaseProvider,
   DictionaryManager as PostgresDictionaryManager,
 } from 'src/database/providers/postgres';
+import { DatabaseController } from './database.controller';
+import { DatabaseService } from './database.service';
 
 const dbProvider = {
   provide: DB_CONNECTION,
@@ -35,7 +37,8 @@ const dbProvider = {
 
 @Global()
 @Module({
-  providers: [dbProvider, PostgresDictionaryManager],
+  providers: [dbProvider, PostgresDictionaryManager, DatabaseService],
   exports: [dbProvider, PostgresDictionaryManager],
+  controllers: [DatabaseController],
 })
 export class DBModule {}

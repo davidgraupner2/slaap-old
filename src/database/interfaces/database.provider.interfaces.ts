@@ -33,3 +33,14 @@ export type TDatabaseProviderConstructor = {
   config_service: ConfigService;
   dictionary_manager: DictionaryManager;
 };
+
+export interface IDatabaseColumn {
+  name: string;
+}
+
+export interface IDatabaseTable {
+  name: string;
+  databaseName: string;
+  schemaName: string;
+  columns: Array<IDatabaseColumn>;
+}
