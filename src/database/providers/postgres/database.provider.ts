@@ -74,7 +74,7 @@ export class DatabaseProvider implements db_interfaces.IDatabaseProvider {
 
     // this.loadTables();
 
-    console.log(this.schema.tables());
+    console.log(this.schema.tables);
   }
 
   public get schema() {

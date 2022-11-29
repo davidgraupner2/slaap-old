@@ -1,4 +1,6 @@
-export class DatabaseProviderTable {
+import { IDatabaseColumn, IDatabaseTable } from 'src/database/interfaces';
+
+export class DatabaseProviderTable implements IDatabaseTable {
   private _name: string;
   private _databaseName: string;
   private _schemaName: string;
@@ -8,6 +10,7 @@ export class DatabaseProviderTable {
     this._schemaName = schemaName;
     this._name = name;
   }
+  columns: IDatabaseColumn[];
 
   public get name(): string {
     return this._name;

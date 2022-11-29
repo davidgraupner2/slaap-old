@@ -1,6 +1,34 @@
 import { ConfigService } from 'src/config/config.service';
 import { DictionaryManager } from 'src/database/providers/postgres';
 
+export interface ISchemaManager {
+  /*
+  Public Properties
+  */
+
+  // Returns an array of tables the schema manager is aware of
+  tables: Array<IDatabaseTable>;
+
+  /*
+    Public Methods
+  */
+
+  // Returns a specific table requested or undefined if not found
+  table(
+    databaseName: string,
+    schemaName: string,
+    name: string,
+  ): IDatabaseTable | undefined;
+
+  // Adds a new table to the schema and returns this new table
+  addTable(
+    databaseName: string,
+    schemaName: string,
+    name: string,
+    inheritsFrom?: string,
+  ): IDatabaseTable;
+}
+
 /* Interface that all DBProviders must adhere to */
 export interface IDatabaseProvider {
   // Some common variables
@@ -35,7 +63,12 @@ export type TDatabaseProviderConstructor = {
 };
 
 export interface IDatabaseColumn {
+  /* 
+  Properties that must be visible on the interface
+  */
   name: string;
+  comment: string;
+  value: any;
 }
 
 export interface IDatabaseTable {

@@ -1,7 +1,7 @@
 // import { DatabaseColumn } from './database.column';
 // import { DatabaseColumns } from './database.columns';
 import { DatabaseColumns } from '../../../common/data/database.columns';
-import { IDatabaseColumn } from '../../interfaces/database.column.interfaces';
+import { IDatabaseColumn } from 'src/database/interfaces';
 
 export class DataBaseTable {
   // Common Table variables

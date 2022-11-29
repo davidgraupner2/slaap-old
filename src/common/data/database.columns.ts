@@ -1,4 +1,4 @@
-import { IDatabaseColumn } from '../../database/interfaces/database.column.interfaces';
+import { IDatabaseColumn } from 'src/database/interfaces';
 import { DatabaseColumn } from 'src/database/providers/postgres/types';
 
 export class DatabaseColumns {
