@@ -1,2 +1,1 @@
-export * from './config-options.interface';
-export * from './envconfig.interface';
+export { EnvConfig, ConfigOptions, TConfiguration } from './config.interfaces';

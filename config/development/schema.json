@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "tables": [
+    { "schemaName": "Application", "tableName": "application" },
+    { "schemaName": "Tables", "tableName": "tables" },
+    { "components": "Application", "tableName": "components" }
+  ]
+}

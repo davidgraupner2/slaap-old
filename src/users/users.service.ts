@@ -1,5 +1,4 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { find } from 'rxjs';
 import { DB_CONNECTION } from 'src/database/constants';
 
 export type User = any;
