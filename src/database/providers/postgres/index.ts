@@ -1,3 +1,3 @@
-export * from './database.dictionary.manager';
+// export * from './database.dictionary.manager';
 export * from './database.provider';
-export * from './database.table';
+// export * from './database.table';

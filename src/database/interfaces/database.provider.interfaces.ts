@@ -1,5 +1,5 @@
 import { ConfigService } from 'src/config/config.service';
-import { DictionaryManager } from 'src/database/providers/postgres';
+// import { DictionaryManager } from 'src/database/providers/postgres';
 
 export interface ISchemaManager {
   /*
@@ -59,7 +59,7 @@ export type TDatabaseProviderConstructor = {
   userName: string;
   password: string;
   config_service: ConfigService;
-  dictionary_manager: DictionaryManager;
+  // dictionary_manager: DictionaryManager;
 };
 
 export interface IDatabaseColumn {

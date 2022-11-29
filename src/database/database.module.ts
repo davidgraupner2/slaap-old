@@ -1,9 +1,9 @@
-import { DB_CONNECTION, DICTIONARY_MANAGER } from './constants';
+import { DB_CONNECTION } from './constants';
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from 'src/config/config.service';
 import {
   DatabaseProvider as PostGresDatabaseProvider,
-  DictionaryManager as PostgresDictionaryManager,
+  // DictionaryManager as PostgresDictionaryManager,
 } from 'src/database/providers/postgres';
 import { DatabaseController } from './database.controller';
 import { DatabaseService } from './database.service';
@@ -12,7 +12,7 @@ const dbProvider = {
   provide: DB_CONNECTION,
   useFactory: (
     configService: ConfigService,
-    dictmanager: PostgresDictionaryManager,
+    // dictmanager: PostgresDictionaryManager,
   ) => {
     /* Return the correct DB Provider
      - Based on the type that has been requested */
@@ -26,19 +26,22 @@ const dbProvider = {
         userName: configService.get('db_user_name'),
         password: configService.get('db_password'),
         config_service: configService,
-        dictionary_manager: dictmanager,
+        // dictionary_manager: dictmanager,
       });
     }
   },
   // Inject the class to read the configuration
   // - as well as the Dictionary Manager
-  inject: [ConfigService, PostgresDictionaryManager],
+  // inject: [ConfigService, PostgresDictionaryManager],
+  inject: [ConfigService],
 };
 
 @Global()
 @Module({
-  providers: [dbProvider, PostgresDictionaryManager, DatabaseService],
-  exports: [dbProvider, PostgresDictionaryManager],
+  // providers: [dbProvider, PostgresDictionaryManager, DatabaseService],
+  // exports: [dbProvider, PostgresDictionaryManager],
+  providers: [dbProvider, DatabaseService],
+  exports: [dbProvider],
   controllers: [DatabaseController],
 })
 export class DBModule {}

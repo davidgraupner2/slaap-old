@@ -1,8 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as db_interfaces from '../../interfaces';
 import { Pool } from 'pg';
-import { DictionaryManager } from 'src/database/providers/postgres';
-import { DICTIONARY_MANAGER } from 'src/database/constants';
 import { ConfigService } from 'src/config/config.service';
 import { findMany } from './database.provider.findmany';
 import { DatabaseProviderSchema } from './database.provider.schema';
@@ -40,7 +38,6 @@ export class DatabaseProvider implements db_interfaces.IDatabaseProvider {
     userName,
     password,
     config_service,
-    dictionary_manager,
   }: db_interfaces.TDatabaseProviderConstructor) {
     // Set the properties to what was passed in
     this.type = type;
@@ -64,36 +61,12 @@ export class DatabaseProvider implements db_interfaces.IDatabaseProvider {
 
     this._schema_manager = new DatabaseProviderSchema(this.connection_pool);
 
-    // Setup the dictionary manager with this database provider
-    // dictionary_manager.initialise(
-    //   this,
-    //   this.config_service.get('dictionary_table'),
-    //   this.config_service.get('dictionary_field_table'),
-    // );
-    // dictionary_manager.loadTables();
-
-    // this.loadTables();
-
     console.log(this.schema.tables);
   }
 
   public get schema() {
     return this._schema_manager;
   }
-
-  // private async loadTables() {
-  //   const response = await this.connection_pool.query(
-  //     SQLCONSTANTS.SCHEMA_TABLE_NAMES,
-  //   );
-
-  //   response.rows.forEach((element) => {
-  //     this.schema_manager.addTable(
-  //       element.table_catalog,
-  //       element.table_schema,
-  //       element.table_name,
-  //     );
-  //   });
-  // }
 
   query(tableName: string): object {
     console.log('Getting new Query Object ' + tableName);
