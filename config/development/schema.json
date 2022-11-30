@@ -1,7 +1,15 @@
 {
   "version": 1,
   "tables": [
-    { "schemaName": "Application", "tableName": "application" },
+    {
+      "schemaName": "Application",
+      "tableName": "application",
+      "columns": [
+        { "type": "primaryKeyIdentifier", "name": "id" },
+        { "type": "identifier", "name": "name" },
+        { "type": "versionIdentifier", "name": "version" }
+      ]
+    },
     { "schemaName": "Tables", "tableName": "tables" },
     { "components": "Application", "tableName": "components" }
   ]
