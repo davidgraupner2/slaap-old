@@ -5,6 +5,8 @@ import { ConfigService } from './config/config.service';
 import { ConfigModule } from './config/config.module';
 import { WinstonModule } from 'nest-winston';
 import { transports, format } from 'winston';
+import { DatabaseModule } from './database/database.module';
+import { UsersModule } from './users/users.module';
 
 // Make it easier to set the logging format for Winston below
 const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
@@ -44,6 +46,10 @@ const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
       // required logging level from the config file
       inject: [ConfigService],
     }),
+
+    DatabaseModule,
+
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, Logger],
