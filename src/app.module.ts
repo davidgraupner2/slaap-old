@@ -46,9 +46,7 @@ const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
       // required logging level from the config file
       inject: [ConfigService],
     }),
-
     DatabaseModule,
-
     UsersModule,
   ],
   controllers: [AppController],
