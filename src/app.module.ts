@@ -1,24 +1,17 @@
 import { Module, Logger } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
+import { ConfigService } from './config/config.service';
 import { ConfigModule } from './config/config.module';
-import { DBModule } from './database/database.module';
-import { UsersModule } from './users/users.module';
 import { WinstonModule } from 'nest-winston';
 import { transports, format } from 'winston';
-import { ConfigService } from './config/config.service';
-import { SchemaModule } from './schema/schema.module';
 
 // Make it easier to set the logging format for Winston below
 const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
 
 @Module({
   imports: [
-    AuthModule,
     ConfigModule.register({ folder: process.env.CONFIG_FOLDER || './config' }),
-    DBModule,
-    UsersModule,
 
     //////////////////////////////////////
     // Configure system wide logging here
@@ -51,8 +44,6 @@ const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
       // required logging level from the config file
       inject: [ConfigService],
     }),
-
-    SchemaModule,
   ],
   controllers: [AppController],
   providers: [AppService, Logger],

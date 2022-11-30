@@ -13,5 +13,4 @@ export type TConfiguration = {
   environment: string;
   configurationFolder: string;
   platformConfigurationFile: string;
-  schemaConfigurationFile: string;
 };

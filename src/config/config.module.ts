@@ -1,4 +1,4 @@
-import { Module, DynamicModule, Global } from '@nestjs/common';
+import { Module, DynamicModule, Global, Logger } from '@nestjs/common';
 import { ConfigService } from './config.service';
 import { CONFIG_OPTIONS } from './constants';
 import { EnvConfig, ConfigOptions } from './interfaces';
@@ -6,7 +6,7 @@ import { ConfigController } from './config.controller';
 
 @Global()
 @Module({
-  controllers: [ConfigController]
+  controllers: [ConfigController],
 })
 export class ConfigModule {
   static register(options: ConfigOptions): DynamicModule {
@@ -18,6 +18,7 @@ export class ConfigModule {
           useValue: options,
         },
         ConfigService,
+        Logger,
       ],
       exports: [ConfigService],
     };

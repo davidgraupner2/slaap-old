@@ -1,11 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
 import { env } from 'process';
 import { CONFIG_OPTIONS } from './constants';
-import { EnvConfig, ConfigOptions } from './interfaces';
-import { TConfiguration } from './interfaces/config.interfaces';
+import {
+  EnvConfig,
+  TConfiguration,
+  ConfigOptions,
+} from 'src/config/interfaces';
+import { loggers } from 'winston';
 
 @Injectable()
 export class ConfigService {
@@ -17,7 +21,10 @@ export class ConfigService {
 
   // Config Options are injected into this Service via the dynamioModule
   // defines in the Config Module 'config.module.ts'
-  constructor(@Inject(CONFIG_OPTIONS) options: ConfigOptions) {
+  constructor(
+    @Inject(CONFIG_OPTIONS) options: ConfigOptions,
+    private readonly logger: Logger,
+  ) {
     // Get the environment we are currently running in
     // - 'development' - if not set
     this._environment = `${process.env.NODE_ENV || 'development'}`;
@@ -34,12 +41,6 @@ export class ConfigService {
     this._platformConfigurationFile = path.resolve(
       this._configurationFolder,
       'platform.env',
-    );
-
-    // Get the Schema config file we wil be using
-    this._schemaConfigurationFile = path.resolve(
-      this._configurationFolder,
-      'schema.json',
     );
 
     // Load the environment file into ram
@@ -60,7 +61,6 @@ export class ConfigService {
       environment: this._environment,
       configurationFolder: this._configurationFolder,
       platformConfigurationFile: this._platformConfigurationFile,
-      schemaConfigurationFile: this._schemaConfigurationFile,
     };
   }
 }
