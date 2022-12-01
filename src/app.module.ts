@@ -7,6 +7,7 @@ import { WinstonModule } from 'nest-winston';
 import { transports, format } from 'winston';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 // Make it easier to set the logging format for Winston below
 const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
@@ -48,6 +49,7 @@ const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
     }),
     DatabaseModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, Logger],
