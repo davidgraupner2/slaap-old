@@ -14,6 +14,11 @@ import { ConfigService } from 'src/config/config.service';
       useFactory: (configService: ConfigService) => ({
         config: {
           client: configService.get('db_client'),
+          debug: configService.get('db_debug') === 'true',
+          pool: {
+            min: parseInt(configService.get('db__pool_min_connections')),
+            max: parseInt(configService.get('db__pool_max_connections')),
+          },
           connection: {
             database: configService.get('db_database_name'),
             user: configService.get('db_user_name'),

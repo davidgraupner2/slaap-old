@@ -14,7 +14,7 @@ export class UsersService {
   constructor(@InjectModel() private readonly knex: Knex) {}
 
   async findAll() {
-    const users = await this.knex.table('users');
+    const users = await this.knex.table('users').orderBy('id');
     return { users };
   }
 
