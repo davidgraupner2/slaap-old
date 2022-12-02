@@ -8,6 +8,7 @@ import { transports, format } from 'winston';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+// import DailyRotateFile from 'winston-daily-rotate-file';
 
 // Make it easier to set the logging format for Winston below
 const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
@@ -36,10 +37,16 @@ const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
           new transports.Console({
             level: 'error',
           }),
-          // Logging levels are set by the configuration file
-          new transports.File({
-            filename: 'logs/application.log',
+          // We are using the daily file rotation transport
+          // - See: https://www.npmjs.com/package/winston-daily-rotate-file
+          new transports.DailyRotateFile({
+            dirname: configService.get('LOGGING_DIRECTORY'),
+            filename: configService.get('LOGGING_PLATFORM'),
+            datePattern: configService.get('LOGGING_PLATFORM_DATE_FORMAT'),
+            maxFiles: configService.get('LOGGING_MAX_FILES'),
             level: configService.get('LOGGING_LEVEL') || 'error',
+            zippedArchive:
+              configService.get('LOGGING_LEVEL') === 'true' || false,
           }),
         ],
       }),

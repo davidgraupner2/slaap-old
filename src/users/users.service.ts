@@ -1,17 +1,15 @@
 import {
-  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { CreateUserDto } from './dto/create.user.dto';
 import { LoginUserDto } from './dto';
-import * as argon from 'argon2';
-import * as authContants from 'src/auth/constants';
 
 interface User {
   firstName: string;
@@ -22,7 +20,14 @@ interface User {
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel() private readonly knex: Knex) {}
+  /*
+   Inject knexjs into the service
+   see: https://knexjs.org/guide/
+  */
+  constructor(
+    @InjectModel() private readonly knex: Knex,
+    private logger: Logger,
+  ) {}
 
   async findAll() {
     const users = await this.knex.table('users').orderBy('id');
@@ -43,36 +48,17 @@ export class UsersService {
     }
   }
 
-  /*
-  Check we have a valid email address and password combination
-  - Used for authentication
-  */
-  async validUser(userName: string, password: string) {
-    // Do we have a user with that email address
-    const user = await this.knex
+  async findOneByUserName(userName: string, userNameField: string) {
+    // If the details provided are not sufficient, don't bother looking further
+    if (!userName || !userNameField) {
+      return undefined;
+    }
+
+    // check we have a user with the userName in the provided userName Field
+    return await this.knex
       .table<LoginUserDto>('users')
-      .where('email', userName)
-      .select('email')
-      .select('firstName')
-      .select('lastName')
-      .select('password')
+      .where(userNameField, userName)
       .first();
-
-    if (!user) {
-      console.log('No');
-      throw new ForbiddenException(authContants.CREDENTIALS_INCORRECT);
-    }
-
-    // Now compare the password hash
-    console.log(user.password, password);
-    const pwMatch = await argon.verify(user.password, password);
-
-    // If Password not correct - throw exception
-    if (!pwMatch) {
-      throw new ForbiddenException(authContants.CREDENTIALS_INCORRECT);
-    }
-
-    return { user };
   }
 
   async findOne(id: number) {
