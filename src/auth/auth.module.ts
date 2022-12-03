@@ -3,10 +3,15 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './passport.strategy/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from 'src/config/config.service';
-import { JwtStrategy } from './passport.strategy/jwt.strategy';
+import {
+  JwtStrategy,
+  LocalStrategy,
+  JwtRefreshStrategy,
+} from './passport.strategy';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './passport.guards';
 
 @Module({
   imports: [
@@ -22,7 +27,15 @@ import { JwtStrategy } from './passport.strategy/jwt.strategy';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, Logger, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    Logger,
+    LocalStrategy,
+    JwtStrategy,
+    // Register the JWTAuthGuard as a global guard
+    // i.e. All routes require JWT Authentication unless marked as public
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

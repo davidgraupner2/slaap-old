@@ -12,7 +12,7 @@
     "db:dev:rebuild": "npm run db:dev:rm && npm run db:dev:up",
     "start:dev:db": "docker compose up dev-db -d",
     "knex:seed:make:users": "npx knex seed:make users",
-    "knex:seed:run": "npx knex seed:run",
+    "knex:seed": "npx knex seed:run",
     "knex:init": "npx knex init",
     "knex:migrate:make:users": "npx knex migrate:make users",
     "knex:migrate": "npx knex migrate:latest",

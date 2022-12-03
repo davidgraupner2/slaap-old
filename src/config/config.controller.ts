@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/passport.guards/jwt.auth.guard';
 import { ConfigService } from './config.service';
 
@@ -6,9 +6,8 @@ import { ConfigService } from './config.service';
 export class ConfigController {
   constructor(private configService: ConfigService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get('platform')
-  platformConfiguration() {
+  platformConfiguration(@Request() req) {
     return this.configService.configuration();
   }
 }
