@@ -1,14 +1,14 @@
-import { Module, Logger } from '@nestjs/common';
+import { Module, Logger, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigService } from './config/config.service';
 import { ConfigModule } from './config/config.module';
-import { WinstonModule } from 'nest-winston';
+import { NestLikeConsoleFormatOptions, WinstonModule } from 'nest-winston';
 import { transports, format } from 'winston';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-// import DailyRotateFile from 'winston-daily-rotate-file';
+import { HTTPLogger } from 'src/middleware/http.logger.middleware';
 
 // Make it easier to set the logging format for Winston below
 const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
@@ -61,4 +61,9 @@ const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
   controllers: [AppController],
   providers: [AppService, Logger],
 })
-export class AppModule {}
+export class AppModule {
+  // Register the middleware for logging HTTP Requests and Responses
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(HTTPLogger).forRoutes('*');
+  }
+}
