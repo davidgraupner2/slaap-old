@@ -14,6 +14,7 @@ import { ConfigService } from 'src/config/config.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import { TokenActionTypeEnum } from './constants';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +27,7 @@ export class AuthService {
     private configService: ConfigService,
     private logger: Logger,
     private jwtService: JwtService,
+    private databaseService: DatabaseService,
   ) {}
 
   /*

@@ -1,8 +1,11 @@
-import { Inject, Module } from '@nestjs/common';
+import { Inject, Module, Logger, Global } from '@nestjs/common';
 import { KnexModule } from 'nest-knexjs';
 import { ConfigModule } from 'src/config/config.module';
 import { ConfigService } from 'src/config/config.service';
 
+import { DatabaseService } from './database.service';
+
+@Global()
 @Module({
   imports: [
     // Dynamically create the Database Provider we will be using
@@ -11,7 +14,7 @@ import { ConfigService } from 'src/config/config.service';
     // - We are using knexjs - https://knexjs.org/
     // - Its provides good features such as migration and seeding but also dyanamic SQL Query building for multiple databases
     KnexModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService, logger: Logger) => ({
         config: {
           client: configService.get('db_client'),
           debug: configService.get('db_debug') === 'true',
@@ -27,6 +30,21 @@ import { ConfigService } from 'src/config/config.service';
             port: configService.get('db_port'),
           },
           searchPath: ['public'],
+          // Redirect KnexJS Logs to our logger instance - rather than console
+          log: {
+            warn(message) {
+              logger.warn(message, 'KnexDbService');
+            },
+            error(message) {
+              logger.error(message, 'KnexDbService');
+            },
+            deprecate(message) {
+              logger.verbose(message, 'KnexDbService');
+            },
+            debug(message) {
+              logger.debug(message, 'KnexDbService');
+            },
+          },
         },
       }),
       // Inject the ConfigService, so we can read the
@@ -34,7 +52,8 @@ import { ConfigService } from 'src/config/config.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [],
+  providers: [DatabaseService, Logger],
   controllers: [],
+  exports: [DatabaseService],
 })
 export class DatabaseModule {}
