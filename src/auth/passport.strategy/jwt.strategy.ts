@@ -40,7 +40,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (access_token && access_token.revoked === false) {
       // Passport.js will build a user object using the data returned from this function
       // and attach that to the request object
-      return { id: payload.sub, username: payload.username };
+      console.log('jwit: ', payload);
+      return {
+        id: payload.sub,
+        username: payload.username,
+        token_id: payload.jti,
+      };
     }
   }
 }

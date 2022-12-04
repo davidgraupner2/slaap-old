@@ -1,4 +1,10 @@
-import { Module, Logger, MiddlewareConsumer } from '@nestjs/common';
+import {
+  Module,
+  Logger,
+  MiddlewareConsumer,
+  NestModule,
+  Scope,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigService } from './config/config.service';
@@ -8,7 +14,8 @@ import { transports, format } from 'winston';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { HTTPLogger } from 'src/middleware/http.logger.middleware';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { GlobalLoggingInterceptor } from './interceptors/global.logging.interceptor';
 
 // Make it easier to set the logging format for Winston below
 const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
@@ -59,11 +66,22 @@ const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, Logger],
+  providers: [
+    AppService,
+    Logger,
+    // Add a global interceptor for logging purposes
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: GlobalLoggingInterceptor,
+      scope: Scope.REQUEST,
+    },
+  ],
 })
-export class AppModule {
-  // Register the middleware for logging HTTP Requests and Responses
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(HTTPLogger).forRoutes('*');
+    /*
+      Register additional middleware using:
+    */
+    // consumer.apply(HTTPLogger).forRoutes('*');
   }
 }
