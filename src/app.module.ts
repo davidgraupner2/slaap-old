@@ -14,8 +14,9 @@ import { transports, format } from 'winston';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { GlobalLoggingInterceptor } from './interceptors/global.logging.interceptor';
+import { GlobalHttpExceptionFilter } from './filters/global.httpexception.filter';
 
 // Make it easier to set the logging format for Winston below
 const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
@@ -74,6 +75,11 @@ const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
       provide: APP_INTERCEPTOR,
       useClass: GlobalLoggingInterceptor,
       scope: Scope.REQUEST,
+    },
+    // Add a global exception filter to enrich exceptions
+    {
+      provide: APP_FILTER,
+      useClass: GlobalHttpExceptionFilter,
     },
   ],
 })
