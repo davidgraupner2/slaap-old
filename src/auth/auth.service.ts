@@ -13,6 +13,7 @@ import * as argon from 'argon2';
 import { ConfigService } from 'src/config/config.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
+import { TokenActionTypeEnum } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -33,13 +34,8 @@ export class AuthService {
   */
   async validateUserLocally(userName: string, password: string) {
     /*
-    First check we have a user with that enail address
+    Validates whether a user / password combination exists in the local database
     */
-    // this.logger.log(
-    //   'alert',
-    //   `Received authentication request from ${ip} for userName: ${userName} and password: ${password}`,
-    //   this.constructor.name,
-    // );
     const user = await this.usersService.findOneByUserName(userName);
 
     // If we have a user - then compare the password hash in the Db , with the password provided
@@ -63,7 +59,7 @@ export class AuthService {
     // return {
     //   accessToken: this.jwtService.sign(payload),
     // };
-    return this.getTokens(user.id, user.userName);
+    return this.getTokens(user.id, user.userName, TokenActionTypeEnum.login);
   }
 
   async logout(id: number) {
@@ -72,12 +68,10 @@ export class AuthService {
     */
 
     await this.usersService.revokeTokens(id, 'Logout');
-
-    return 'Success';
   }
 
   // Generate the signed JWT Token and Refresh Token
-  async getTokens(userId: number, email: string) {
+  async getTokens(userId: number, email: string, action: TokenActionTypeEnum) {
     // Generate the payload
     const payload = {
       sub: userId,
@@ -85,7 +79,7 @@ export class AuthService {
     };
 
     // Generate the JWT ID's
-    const token_id = uuidv4();
+    const accessTokenId = uuidv4();
     const refreshTokenId = uuidv4();
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -94,7 +88,7 @@ export class AuthService {
         secret: this.configService.get('JWT_SECRET'),
         audience: this.configService.get('JWT_AUDIENCE'),
         issuer: this.configService.get('JWT_ISSUER'),
-        jwtid: token_id,
+        jwtid: accessTokenId,
       }),
       this.jwtService.signAsync(payload, {
         expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN'),
@@ -105,12 +99,24 @@ export class AuthService {
       }),
     ]);
 
-    // Save the refreshToken against the user record
-    this.usersService.saveTokens(
-      userId,
-      token_id,
-      await this.hashData(refreshToken),
-    );
+    // Save the token_id, refreshToken against the user record
+    if (action == TokenActionTypeEnum.login) {
+      this.usersService.saveLoginTokens(
+        userId,
+        accessTokenId,
+        refreshTokenId,
+        await this.hashData(refreshToken),
+      );
+    }
+
+    if (action == TokenActionTypeEnum.refreshToken) {
+      this.usersService.saveRefreshTokens(
+        userId,
+        accessTokenId,
+        refreshTokenId,
+        await this.hashData(refreshToken),
+      );
+    }
 
     // Return the access token and refresh token
     return { accessToken, refreshToken };
@@ -120,26 +126,10 @@ export class AuthService {
     return argon.hash(data);
   }
 
-  // Save the current refresh token against the user record
-  async updateRefreshToken(userId: number, refreshToken: string) {
-    // Hash the refresh token before saving in the database
-    const hashedRefreshToken = await this.hashData(refreshToken);
-
-    //Add the refreshtoken to the DB, against the user record
-    // this.usersService.saveRefreshToken(userId, hashedRefreshToken);
-  }
-
-  async refreshTokens(userId: number, refreshToken: string) {
-    // First get the token record thats related to this user
-    const token = this.usersService.getUserToken(userId);
-
-    if (!token) {
-      throw new ForbiddenException();
-    }
-
-    console.log(token);
-
-    // If we get here we have a valid token
-    // const matches = await argon.verify(token.refreshToken, refreshToken);
+  async refreshTokens(userId: number, userName: string) {
+    /*
+    Recreate some new access tokens and refresh tokens
+    */
+    return this.getTokens(userId, userName, TokenActionTypeEnum.refreshToken);
   }
 }

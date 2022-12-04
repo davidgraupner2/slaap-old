@@ -107,31 +107,80 @@ export class UsersService {
   /*  
   Saves the current access token ID and hashed Refresh token against the user record
   */
-  async saveTokens(id: number, tokenId: string, hashedRefreshToken: string) {
+  async saveRefreshTokens(
+    id: number,
+    access_tokenId: string,
+    refresh_token_id: string,
+    hashedRefreshToken: string,
+  ) {
+    /* First revoke all current tokens before adding the new ones
+     - We don't want tokens lying around that can still be used by this user
+     */
+    await this.revokeTokens(id, 'Refresh - New Token Requested');
+
+    // Now Save the new tokens against the user
+    this.saveTokens(id, access_tokenId, refresh_token_id, hashedRefreshToken);
+  }
+
+  private async saveTokens(
+    id: number,
+    access_tokenId: string,
+    refresh_token_id: string,
+    hashedRefreshToken: string,
+  ) {
+    // Save the new token against the user record
+    // - Store the regreh token s- we can use that to grant the user a new token if needed
+    const tokens = await this.knex.table('tokens').insert({
+      user_id: id,
+      access_token_id: access_tokenId,
+      refresh_token_id: refresh_token_id,
+      refresh_token: hashedRefreshToken,
+    });
+  }
+
+  /*  
+  Saves the current access token ID and hashed Refresh token against the user record
+  */
+  async saveLoginTokens(
+    id: number,
+    access_tokenId: string,
+    refresh_token_id: string,
+    hashedRefreshToken: string,
+  ) {
     /* First revoke all current tokens before adding the new ones
      - We don't want tokens lying around that can still be used by this user
      */
     await this.revokeTokens(id, 'Login - New Token Requested');
 
-    // Save the new token against the user record
-    // - Store the regreh token s- we can use that to grant the user a new token if needed
-    const tokens = await this.knex.table('tokens').insert({
-      user_id: id,
-      access_token_id: tokenId,
-      refresh_token: hashedRefreshToken,
-    });
+    // Now Save the new tokens against the user
+    this.saveTokens(id, access_tokenId, refresh_token_id, hashedRefreshToken);
   }
 
-  async getUserToken(id: number) {
-    /* 
-    Return the current token that is allocated to the user record
-    - Will not return revoked tokens
-    */
+  async getRefreshToken(id: number, refresh_token_id: string) {
+    /*
+      Return the current refresh token that is allocated to the user record
+      - by refresh token id
+      */
+
     return await this.knex
       .table('tokens')
       .where({
-        id: id,
-        revoked: false,
+        user_id: id,
+        refresh_token_id: refresh_token_id,
+      })
+      .first();
+  }
+
+  async getAccessToken(id: number, access_token_id: string) {
+    /*
+      Return the current token that is allocated to the user record
+      - by access token id
+      */
+    return await this.knex
+      .table('tokens')
+      .where({
+        user_id: id,
+        access_token_id: access_token_id,
       })
       .first();
   }

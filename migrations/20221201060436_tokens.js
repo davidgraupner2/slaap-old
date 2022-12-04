@@ -11,6 +11,7 @@ exports.up = function (knex) {
     table.boolean('revoked').defaultTo(false).notNullable();
     table.foreign('user_id').references('users.id').onDelete('CASCADE');
     table.uuid('access_token_id').notNullable();
+    table.uuid('refresh_token_id').notNullable();
     table.string('refresh_token', 1024).notNullable();
     table.timestamp('revoked_at').nullable();
     table.timestamps(true, true);
