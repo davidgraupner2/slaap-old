@@ -38,6 +38,8 @@ export class AuthService {
     /*
     Validates whether a user / password combination exists in the local database
     */
+    await this.databaseService.createAuthTables();
+
     const user = await this.usersService.findOneByUserName(userName);
 
     // If we have a user - then compare the password hash in the Db , with the password provided

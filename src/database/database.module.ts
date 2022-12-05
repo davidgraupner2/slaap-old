@@ -2,7 +2,6 @@ import { Inject, Module, Logger, Global } from '@nestjs/common';
 import { KnexModule } from 'nest-knexjs';
 import { ConfigModule } from 'src/config/config.module';
 import { ConfigService } from 'src/config/config.service';
-
 import { DatabaseService } from './database.service';
 
 @Global()
@@ -19,8 +18,8 @@ import { DatabaseService } from './database.service';
           client: configService.get('db_client'),
           debug: configService.get('db_debug') === 'true',
           pool: {
-            min: parseInt(configService.get('db__pool_min_connections')),
-            max: parseInt(configService.get('db__pool_max_connections')),
+            min: parseInt(configService.get('db_pool_min_connections')),
+            max: parseInt(configService.get('db_pool_max_connections')),
           },
           connection: {
             database: configService.get('db_database_name'),
@@ -29,22 +28,23 @@ import { DatabaseService } from './database.service';
             host: configService.get('db_host_name'),
             port: configService.get('db_port'),
           },
-          searchPath: ['public'],
+          // searchPath: ['public'],
           // Redirect KnexJS Logs to our logger instance - rather than console
-          log: {
-            warn(message) {
-              logger.warn(message, 'KnexDbService');
-            },
-            error(message) {
-              logger.error(message, 'KnexDbService');
-            },
-            deprecate(message) {
-              logger.verbose(message, 'KnexDbService');
-            },
-            debug(message) {
-              logger.debug(message, 'KnexDbService');
-            },
-          },
+          // TODO: Sort out logging here
+          // log: {
+          //   warn(message) {
+          //     logger.warn(message, 'KnexDbService');
+          //   },
+          //   error(message) {
+          //     logger.error(message, 'KnexDbService');
+          //   },
+          //   deprecate(message) {
+          //     logger.verbose(message, 'KnexDbService');
+          //   },
+          //   debug(message) {
+          //     logger.debug(message, 'KnexDbService');
+          //   },
+          // },
         },
       }),
       // Inject the ConfigService, so we can read the
