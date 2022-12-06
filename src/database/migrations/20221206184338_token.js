@@ -1,15 +1,13 @@
-const { table } = require('console');
-
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
 exports.up = function (knex) {
-  return knex.schema.createTable('tokens', function (table) {
-    table.increments('id');
+  return knex.schema.withSchema('public').createTable('token', function (table) {
+    table.bigIncrements('id');
     table.bigint('user_id').unsigned().notNullable();
+    table.foreign('user_id').references('user.id').onDelete('CASCADE');
     table.boolean('revoked').defaultTo(false).notNullable();
-    table.foreign('user_id').references('users.id').onDelete('CASCADE');
     table.uuid('access_token_id').notNullable();
     table.uuid('refresh_token_id').notNullable();
     table.string('refresh_token', 1024).notNullable();
@@ -23,4 +21,6 @@ exports.up = function (knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function (knex) {};
+exports.down = function (knex) {
+  return knex.schema.withSchema('public').dropTable('token');
+};

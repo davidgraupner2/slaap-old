@@ -1,11 +1,4 @@
-import {
-  ForbiddenException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-  Logger,
-} from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { UsersService } from 'src/users/users.service';
@@ -38,7 +31,7 @@ export class AuthService {
     /*
     Validates whether a user / password combination exists in the local database
     */
-    await this.databaseService.createAuthTables();
+    // await this.databaseService.createAuthTables();
 
     const user = await this.usersService.findOneByUserName(userName);
 
@@ -105,21 +98,11 @@ export class AuthService {
 
     // Save the token_id, refreshToken against the user record
     if (action == TokenActionTypeEnum.login) {
-      this.usersService.saveLoginTokens(
-        userId,
-        accessTokenId,
-        refreshTokenId,
-        await this.hashData(refreshToken),
-      );
+      this.usersService.saveLoginTokens(userId, accessTokenId, refreshTokenId, await this.hashData(refreshToken));
     }
 
     if (action == TokenActionTypeEnum.refreshToken) {
-      this.usersService.saveRefreshTokens(
-        userId,
-        accessTokenId,
-        refreshTokenId,
-        await this.hashData(refreshToken),
-      );
+      this.usersService.saveRefreshTokens(userId, accessTokenId, refreshTokenId, await this.hashData(refreshToken));
     }
 
     // Return the access token and refresh token

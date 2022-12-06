@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-  Logger,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { UpdateUserDto } from './dto/update.user.dto';
@@ -24,10 +18,7 @@ export class UsersService {
    Inject knexjs into the service
    see: https://knexjs.org/guide/
   */
-  constructor(
-    @InjectModel() private readonly knex: Knex,
-    private logger: Logger,
-  ) {}
+  constructor(@InjectModel() private readonly knex: Knex, private logger: Logger) {}
 
   async findAll() {
     const users = await this.knex.table('users').orderBy('id');
@@ -55,10 +46,7 @@ export class UsersService {
     }
 
     // check we have a user with the userName in the provided userName Field
-    return await this.knex
-      .table<LoginUserDto>('users')
-      .where('userName', userName)
-      .first();
+    return await this.knex.withSchema('public').table('user').where('userName', userName).first();
   }
 
   async findOne(id: number) {
@@ -95,7 +83,7 @@ export class UsersService {
     Revokes all current unrevoked tokens for a user id passed in
     - Used when generating new tokens OR logging out
     */
-    await this.knex('tokens').where({ user_id: id, revoked: false }).update({
+    await this.knex('token').where({ user_id: id, revoked: false }).update({
       revoked: true,
       revoked_at: new Date(),
       updated_at: new Date(),
@@ -107,12 +95,7 @@ export class UsersService {
   /*  
   Saves the current access token ID and hashed Refresh token against the user record
   */
-  async saveRefreshTokens(
-    id: number,
-    access_tokenId: string,
-    refresh_token_id: string,
-    hashedRefreshToken: string,
-  ) {
+  async saveRefreshTokens(id: number, access_tokenId: string, refresh_token_id: string, hashedRefreshToken: string) {
     /* First revoke all current tokens before adding the new ones
      - We don't want tokens lying around that can still be used by this user
      */
@@ -122,15 +105,10 @@ export class UsersService {
     this.saveTokens(id, access_tokenId, refresh_token_id, hashedRefreshToken);
   }
 
-  private async saveTokens(
-    id: number,
-    access_tokenId: string,
-    refresh_token_id: string,
-    hashedRefreshToken: string,
-  ) {
+  private async saveTokens(id: number, access_tokenId: string, refresh_token_id: string, hashedRefreshToken: string) {
     // Save the new token against the user record
     // - Store the regreh token s- we can use that to grant the user a new token if needed
-    const tokens = await this.knex.table('tokens').insert({
+    const tokens = await this.knex.table('token').insert({
       user_id: id,
       access_token_id: access_tokenId,
       refresh_token_id: refresh_token_id,
@@ -141,12 +119,7 @@ export class UsersService {
   /*  
   Saves the current access token ID and hashed Refresh token against the user record
   */
-  async saveLoginTokens(
-    id: number,
-    access_tokenId: string,
-    refresh_token_id: string,
-    hashedRefreshToken: string,
-  ) {
+  async saveLoginTokens(id: number, access_tokenId: string, refresh_token_id: string, hashedRefreshToken: string) {
     /* First revoke all current tokens before adding the new ones
      - We don't want tokens lying around that can still be used by this user
      */
