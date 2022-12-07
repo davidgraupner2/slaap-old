@@ -27,11 +27,13 @@ export class AuthController {
   @UseGuards(JWTRefreshAuthGuard)
   @Get('refreshToken')
   refresh_token(@Request() req) {
+    console.log(req.user);
     return this.authService.refreshTokens(req.user['sub'], req.user['email']);
   }
 
   @Get('logout')
   logout(@Request() req) {
+    console.log(req.user);
     return this.authService.logout(req.user.id);
   }
 }

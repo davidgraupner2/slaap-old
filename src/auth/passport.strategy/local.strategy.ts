@@ -25,6 +25,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     }
 
     // If the user was found - passport.js adds the user to the request object as req.user
+    delete user.password;
     return user;
   }
 }

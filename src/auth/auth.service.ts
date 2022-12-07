@@ -37,11 +37,6 @@ export class AuthService {
     // get the user by username that is being searched for
     const user = await this.usersService.findOneByUserName(userName);
 
-    //If we have a user - then compare the password hash in the Db , with the password provided
-    if (user) {
-      return user;
-    }
-
     if (user && (await argon.verify(user.password, password))) {
       // We have a user and matching password - return the user (without the password)
       delete user.password;
@@ -62,7 +57,8 @@ export class AuthService {
     // return {
     //   accessToken: this.jwtService.sign(payload),
     // };
-    return this.getTokens(user.id, user.userName, TokenActionTypeEnum.login);
+
+    return this.getTokens(user.id, user.username, TokenActionTypeEnum.login);
   }
 
   async logout(id: number) {
@@ -78,7 +74,7 @@ export class AuthService {
     // Generate the payload
     const payload = {
       sub: userId,
-      email: email,
+      username: email,
     };
 
     // Generate the JWT ID's

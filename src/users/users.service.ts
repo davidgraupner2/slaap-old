@@ -65,6 +65,7 @@ export class UsersService {
       .join('tenant_user', 'user.id', '=', 'tenant_user.user_id')
       .join('tenant', 'tenant.id', '=', 'tenant_user.tenant_id')
       .where('user.userName', userName)
+      .first()
       .returning<userDTO>('*');
   }
 
@@ -169,7 +170,7 @@ export class UsersService {
       - by access token id
       */
     return await this.knex
-      .table('tokens')
+      .table('token')
       .where({
         user_id: id,
         access_token_id: access_token_id,
