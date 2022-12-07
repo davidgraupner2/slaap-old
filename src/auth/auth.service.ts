@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, Logger, Request } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { UsersService } from 'src/users/users.service';
@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import { TokenActionTypeEnum } from './constants';
 import { DatabaseService } from 'src/database/database.service';
+import { userDTO } from 'src/users/dto';
 
 @Injectable()
 export class AuthService {
@@ -33,9 +34,14 @@ export class AuthService {
     */
     // await this.databaseService.createAuthTables();
 
+    // get the user by username that is being searched for
     const user = await this.usersService.findOneByUserName(userName);
 
-    // If we have a user - then compare the password hash in the Db , with the password provided
+    //If we have a user - then compare the password hash in the Db , with the password provided
+    if (user) {
+      return user;
+    }
+
     if (user && (await argon.verify(user.password, password))) {
       // We have a user and matching password - return the user (without the password)
       delete user.password;

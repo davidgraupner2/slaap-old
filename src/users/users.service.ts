@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, NotFoundException, Logger } from
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { UpdateUserDto } from './dto/update.user.dto';
-import { CreateUserDto } from './dto/create.user.dto';
+import { userDTO } from './dto/dto.user';
 import { LoginUserDto } from './dto';
 
 interface User {
@@ -25,7 +25,7 @@ export class UsersService {
     return { users };
   }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: userDTO) {
     try {
       const users = await this.knex.table('users').insert({
         firstName: createUserDto.firstName,
@@ -46,7 +46,26 @@ export class UsersService {
     }
 
     // check we have a user with the userName in the provided userName Field
-    return await this.knex.withSchema('public').table('user').where('userName', userName).first();
+
+    return await this.knex
+      .withSchema('public')
+      .select(
+        'user.id as id',
+        'user.firstName as firstName',
+        'user.lastName as lastName',
+        'user.userName as username',
+        'user.email as email',
+        'user.password as password',
+        'user.verified as verified',
+        'tenant.id as tenant_id',
+        'tenant.name as tenant_name',
+        'tenant.schema_name as tenant_schema_name',
+      )
+      .from('user')
+      .join('tenant_user', 'user.id', '=', 'tenant_user.user_id')
+      .join('tenant', 'tenant.id', '=', 'tenant_user.tenant_id')
+      .where('user.userName', userName)
+      .returning<userDTO>('*');
   }
 
   async findOne(id: number) {
@@ -136,7 +155,7 @@ export class UsersService {
       */
 
     return await this.knex
-      .table('tokens')
+      .table('token')
       .where({
         user_id: id,
         refresh_token_id: refresh_token_id,

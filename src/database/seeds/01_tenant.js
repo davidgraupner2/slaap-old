@@ -14,6 +14,7 @@ exports.seed = async function (knex) {
       {
         id: 1,
         name: 'public',
+        schema_name: 'public',
       },
     ]);
 };

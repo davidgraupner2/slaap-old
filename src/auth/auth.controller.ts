@@ -1,11 +1,8 @@
 import { Controller, Post, Request, UseGuards, Get } from '@nestjs/common';
 import * as dto from 'src/users/dto';
 import { AuthService } from './auth.service';
-import {
-  JWTRefreshAuthGuard,
-  LocalAuthGuard,
-  Public,
-} from 'src/auth/passport.guards';
+import { JWTRefreshAuthGuard, LocalAuthGuard, Public } from 'src/auth/passport.guards';
+import { User } from 'src/decorators/decorator.user';
 
 @Controller('auth')
 export class AuthController {
