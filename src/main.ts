@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import 'winston-daily-rotate-file';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   /* Create an instance of the main app module*/
@@ -49,6 +50,11 @@ async function bootstrap() {
     type: VersioningType.URI,
     defaultVersion: '1',
   });
+
+  // Add Swagger Support
+  const swaggerConfig = new DocumentBuilder().setTitle('SLAAP').setDescription('Streamline Partners - Advanced Application Platform').setVersion('1.0').addTag('slaap').build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document);
 
   // Set a global prefix for all routes
   app.setGlobalPrefix('api');

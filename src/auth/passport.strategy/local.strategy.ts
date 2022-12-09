@@ -24,6 +24,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException(authConstants.CREDENTIALS_INCORRECT);
     }
 
+    console.log(user);
+
     // If the user was found - passport.js adds the user to the request object as req.user
     delete user.password;
     return user;
