@@ -20,7 +20,6 @@ export class AuthController {
     // if user validation with passport.js succeeds - the user object
     // is added to the request object and we return that, else the code in this route handler
     // will never run - passport.js will return an unauthorized exception
-    console.log(req.user);
     return this.authService.login(req.user);
   }
 

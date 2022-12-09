@@ -4,17 +4,19 @@
  */
 exports.seed = async function (knex) {
   // Deletes ALL existing entries
-  await knex.withSchema('public').table('tenant').del();
+  await knex.withSchema('public').table('role').del();
 
   // Inserts new tenants into the tenant table
   await knex
     .withSchema('public')
-    .table('tenant')
+    .table('role')
     .insert([
       {
         id: 1,
-        name: 'public',
-        schema_name: 'public',
+        name: 'msp.admin',
+        description: 'Manages Services Administrator role',
+        created_by: 1,
+        updated_by: 1,
       },
     ]);
 };

@@ -1,4 +1,4 @@
-const constants = require('../constants.columntypes.js');
+const constants = require('../constants/constants.columntypes.js');
 
 /**
  * @param { import("knex").Knex } knex
@@ -16,6 +16,13 @@ exports.up = function (knex) {
     table.integer('precision').notNullable().defaultTo(8);
     table.integer('scale').notNullable().defaultTo(2);
     table.unique(['table_id', 'name']);
+
+    // Keep track of who/when created / updated
+    table.timestamps(true, true);
+    table.bigInteger('created_by').unsigned().notNullable();
+    table.bigInteger('updated_by').unsigned().notNullable();
+    table.foreign('created_by').references('user.id').onDelete('CASCADE');
+    table.foreign('updated_by').references('user.id').onDelete('CASCADE');
   });
 };
 

@@ -4,6 +4,7 @@ import { InjectModel } from 'nest-knexjs';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { userDTO } from './dto/dto.user';
 import { LoginUserDto } from './dto';
+import { ConfigService } from 'src/config/config.service';
 
 interface User {
   firstName: string;
@@ -18,7 +19,7 @@ export class UsersService {
    Inject knexjs into the service
    see: https://knexjs.org/guide/
   */
-  constructor(@InjectModel() private readonly knex: Knex, private logger: Logger) {}
+  constructor(@InjectModel() private readonly knex: Knex, private logger: Logger, private configService: ConfigService) {}
 
   async findAll() {
     const users = await this.knex.table('users').orderBy('id');
@@ -48,7 +49,7 @@ export class UsersService {
     // check we have a user with the userName in the provided userName Field
 
     return await this.knex
-      .withSchema('public')
+      .withSchema(this.configService.get('public_schema_name'))
       .select(
         'user.id as id',
         'user.firstName as firstName',
@@ -57,17 +58,43 @@ export class UsersService {
         'user.email as email',
         'user.password as password',
         'user.verified as verified',
-        'tenant.id as tenant_id',
-        'tenant.name as tenant_name',
-        'tenant.schema_name as tenant_schema_name',
+        'is_msp as is_msp',
       )
       .from('user')
-      .join('tenant_user', 'user.id', '=', 'tenant_user.user_id')
-      .join('tenant', 'tenant.id', '=', 'tenant_user.tenant_id')
       .where('user.userName', userName)
       .first()
       .returning<userDTO>('*');
   }
+
+  // async findOneByUserName(userName: string) {
+  //   // If the details provided are not sufficient, don't bother looking further
+  //   if (!userName) {
+  //     return undefined;
+  //   }
+
+  //   // check we have a user with the userName in the provided userName Field
+
+  //   return await this.knex
+  //     .withSchema('public')
+  //     .select(
+  //       'user.id as id',
+  //       'user.firstName as firstName',
+  //       'user.lastName as lastName',
+  //       'user.userName as username',
+  //       'user.email as email',
+  //       'user.password as password',
+  //       'user.verified as verified',
+  //       'tenant.id as tenant_id',
+  //       'tenant.name as tenant_name',
+  //       'tenant.schema_name as tenant_schema_name',
+  //     )
+  //     .from('user')
+  //     .join('tenant_user', 'user.id', '=', 'tenant_user.user_id')
+  //     .join('tenant', 'tenant.id', '=', 'tenant_user.tenant_id')
+  //     .where('user.userName', userName)
+  //     .first()
+  //     .returning<userDTO>('*');
+  // }
 
   async findOne(id: number) {
     if (!id) {

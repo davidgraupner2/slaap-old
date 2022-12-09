@@ -7,7 +7,7 @@ module.exports = {
   development: {
     client: 'postgresql',
     connection: {
-      database: 'slaap2',
+      database: 'slaap',
       user: 'postgres',
       password: 'sIrlk46Wlxa73jirI',
       host: 'localhost',

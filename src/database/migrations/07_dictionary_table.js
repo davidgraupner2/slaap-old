@@ -10,6 +10,13 @@ exports.up = function (knex) {
     table.string('name', 60).notNullable();
     table.string('description', 4000).nullable();
     table.unique(['tenant_id', 'name']);
+
+    // Keep track of who/when created / updated
+    table.timestamps(true, true);
+    table.bigInteger('created_by').unsigned().notNullable();
+    table.bigInteger('updated_by').unsigned().notNullable();
+    table.foreign('created_by').references('user.id').onDelete('CASCADE');
+    table.foreign('updated_by').references('user.id').onDelete('CASCADE');
   });
 };
 
