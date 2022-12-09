@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
@@ -41,6 +41,17 @@ async function bootstrap() {
       enableDebugMessages: true,
     }),
   );
+
+  // Enable API URI Versioning and set the default version
+  // - for everything to version 1 unless otherwise specified
+  // see: https://docs.nestjs.com/techniques/versioning
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
+
+  // Set a global prefix for all routes
+  app.setGlobalPrefix('api');
 
   // To change Config Folder location: set the 'CONFIG_FOLDER' environment variable to a different environment name such as '/config'
   const config = app.get(ConfigService);

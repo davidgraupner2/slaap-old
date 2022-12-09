@@ -1,4 +1,4 @@
-import { Controller, Post, Request, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Request, UseGuards, Get, Version } from '@nestjs/common';
 import * as dto from 'src/users/dto';
 import { AuthService } from './auth.service';
 import { JWTRefreshAuthGuard, LocalAuthGuard, Public } from 'src/auth/passport.guards';
@@ -20,6 +20,7 @@ export class AuthController {
     // if user validation with passport.js succeeds - the user object
     // is added to the request object and we return that, else the code in this route handler
     // will never run - passport.js will return an unauthorized exception
+    console.log(req.user);
     return this.authService.login(req.user);
   }
 
@@ -27,7 +28,6 @@ export class AuthController {
   @UseGuards(JWTRefreshAuthGuard)
   @Get('refreshToken')
   refresh_token(@Request() req) {
-    console.log(req.user);
     return this.authService.refreshTokens(req.user['sub'], req.user['email']);
   }
 
