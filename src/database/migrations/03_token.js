@@ -5,8 +5,11 @@
 exports.up = function (knex) {
   return knex.schema.withSchema('public').createTable('token', function (table) {
     // Links this token to the end user
-    table.bigIncrements('id');
-    table.bigint('user_id').unsigned().notNullable();
+    // table.bigIncrements('id');
+    table.uuid('id').primary();
+
+    // table.bigint('user_id').unsigned().notNullable();
+    table.uuid('user_id').unsigned().notNullable();
     table.foreign('user_id').references('user.id').onDelete('CASCADE');
 
     // Indicates if the token has been revoked

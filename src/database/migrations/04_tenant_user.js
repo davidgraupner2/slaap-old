@@ -5,14 +5,18 @@
 exports.up = function (knex) {
   return knex.schema.withSchema('public').createTable('tenant_user', function (table) {
     // Links an existing user to an existing tenant
-    table.bigint('tenant_id').unsigned().notNullable();
+    // table.bigint('tenant_id').unsigned().notNullable();
+    table.uuid('tenant_id').unsigned().notNullable();
     table.foreign('tenant_id').references('tenant.id').onDelete('CASCADE');
-    table.bigint('user_id').unsigned().notNullable();
+    // table.bigint('user_id').unsigned().notNullable();
+    table.uuid('user_id').unsigned().notNullable();
     table.foreign('user_id').references('user.id').onDelete('CASCADE');
 
     // Keep track of who/when created / updated
-    table.bigInteger('created_by').unsigned().notNullable();
-    table.bigInteger('updated_by').unsigned().notNullable();
+    table.uuid('created_by').unsigned().notNullable();
+    table.uuid('updated_by').unsigned().notNullable();
+    // table.bigInteger('created_by').unsigned().notNullable();
+    // table.bigInteger('updated_by').unsigned().notNullable();
     table.foreign('created_by').references('user.id').onDelete('CASCADE');
     table.foreign('updated_by').references('user.id').onDelete('CASCADE');
     table.timestamps(true, true);

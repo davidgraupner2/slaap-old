@@ -51,7 +51,7 @@ async function bootstrap() {
     defaultVersion: '1',
   });
 
-  // Add Swagger Support
+  // Add Swagger Support for v1
   const swaggerConfig = new DocumentBuilder().setTitle('SLAAP').setDescription('Streamline Partners - Advanced Application Platform').setVersion('1.0').addTag('slaap').build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);

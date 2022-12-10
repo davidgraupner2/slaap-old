@@ -12,11 +12,11 @@ exports.seed = async function (knex) {
     .table('role')
     .insert([
       {
-        id: 1,
+        id: '97c026c7-98a4-4315-8126-c2b42a510120',
         name: 'msp.admin',
         description: 'Manages Services Administrator role',
-        created_by: 1,
-        updated_by: 1,
+        created_by: '18e56058-8f2e-468b-9d10-c9a65586dfa6',
+        updated_by: '18e56058-8f2e-468b-9d10-c9a65586dfa6',
       },
     ]);
 };

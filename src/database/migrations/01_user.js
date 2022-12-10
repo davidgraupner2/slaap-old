@@ -5,7 +5,8 @@
 exports.up = function (knex) {
   return knex.schema.withSchema('public').createTable('user', function (table) {
     // Identity and Primary Key
-    table.bigIncrements('id').primary();
+    // table.bigIncrements('id').primary();
+    table.uuid('id').primary();
 
     table.string('firstName', 255).notNullable();
     table.string('lastName', 255).notNullable();

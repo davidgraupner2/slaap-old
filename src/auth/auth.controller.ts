@@ -3,10 +3,12 @@ import * as dto from 'src/users/dto';
 import { AuthService } from './auth.service';
 import { JWTRefreshAuthGuard, LocalAuthGuard, Public } from 'src/auth/passport.guards';
 import { User } from 'src/decorators/decorator.user';
+import { IdTokenService } from './id.token.service';
+import { TokenActionTypeEnum } from './constants';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private idTokenService: IdTokenService) {}
 
   /* 
   Public route used to authenticate a user locally 
@@ -20,14 +22,15 @@ export class AuthController {
     // if user validation with passport.js succeeds - the user object
     // is added to the request object and we return that, else the code in this route handler
     // will never run - passport.js will return an unauthorized exception
-    return this.authService.login(req.user);
+    return this.idTokenService.getTokens(req.user.id, req.user.username, TokenActionTypeEnum.login);
   }
 
   @Public()
   @UseGuards(JWTRefreshAuthGuard)
   @Get('refreshToken')
   refresh_token(@Request() req) {
-    return this.authService.refreshTokens(req.user['sub'], req.user['email']);
+    console.log(req.user);
+    return this.idTokenService.refreshTokens(req.user.id, req.user.email);
   }
 
   @Get('logout')

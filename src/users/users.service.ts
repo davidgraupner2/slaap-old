@@ -5,6 +5,7 @@ import { UpdateUserDto } from './dto/update.user.dto';
 import { userDTO } from './dto/dto.user';
 import { LoginUserDto } from './dto';
 import { ConfigService } from 'src/config/config.service';
+import { v4 as uuidv4 } from 'uuid';
 
 interface User {
   firstName: string;
@@ -47,8 +48,7 @@ export class UsersService {
     }
 
     // check we have a user with the userName in the provided userName Field
-
-    return await this.knex
+    const user = await this.knex
       .withSchema(this.configService.get('public_schema_name'))
       .select(
         'user.id as id',
@@ -62,8 +62,26 @@ export class UsersService {
       )
       .from('user')
       .where('user.userName', userName)
-      .first()
-      .returning<userDTO>('*');
+      .first();
+
+    return user;
+
+    // return await this.knex
+    //   .withSchema(this.configService.get('public_schema_name'))
+    //   .select(
+    //     'user.id as id',
+    //     'user.firstName as firstName',
+    //     'user.lastName as lastName',
+    //     'user.userName as username',
+    //     'user.email as email',
+    //     'user.password as password',
+    //     'user.verified as verified',
+    //     'is_msp as is_msp',
+    //   )
+    //   .from('user')
+    //   .where('user.userName', userName)
+    //   .first()
+    //   .returning<userDTO>('*');
   }
 
   // async findOneByUserName(userName: string) {
@@ -100,8 +118,25 @@ export class UsersService {
     if (!id) {
       throw new NotFoundException(`User ${id} does not exist`);
     }
-    const users = await this.knex.table('users').where('id', id);
-    return { users };
+
+    // check we have a user with the userName in the provided userName Field
+    const user = await this.knex
+      .withSchema(this.configService.get('public_schema_name'))
+      .select(
+        'user.id as id',
+        'user.firstName as firstName',
+        'user.lastName as lastName',
+        'user.userName as username',
+        'user.email as email',
+        'user.password as password',
+        'user.verified as verified',
+        'is_msp as is_msp',
+      )
+      .from('user')
+      .where('user.id', id)
+      .first();
+
+    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -156,6 +191,7 @@ export class UsersService {
     // Save the new token against the user record
     // - Store the regreh token s- we can use that to grant the user a new token if needed
     const tokens = await this.knex.table('token').insert({
+      id: uuidv4(),
       user_id: id,
       access_token_id: access_tokenId,
       refresh_token_id: refresh_token_id,
@@ -182,13 +218,16 @@ export class UsersService {
       - by refresh token id
       */
 
-    return await this.knex
+    const token = await this.knex
+      .withSchema(this.configService.get('public_schema_name'))
       .table('token')
       .where({
         user_id: id,
         refresh_token_id: refresh_token_id,
       })
       .first();
+
+    return token;
   }
 
   async getAccessToken(id: number, access_token_id: string) {

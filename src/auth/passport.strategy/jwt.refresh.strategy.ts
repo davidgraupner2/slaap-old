@@ -27,7 +27,11 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     if (refresh_token && refresh_token.revoked === false) {
       // Passport.js will build a user object using the data returned from this function
       // and attach that to the request object
-      return { ...payload };
+      // const user = this.usersService.findOne(payload.sub);
+      // console.log('User is: ', user);
+      return this.usersService.findOne(payload.sub);
+      // console.log(user);
+      // return { ...payload };
     }
   }
 }

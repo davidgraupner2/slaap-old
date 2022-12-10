@@ -12,10 +12,10 @@ exports.seed = async function (knex) {
     .table('tenant_user')
     .insert([
       {
-        tenant_id: 1,
-        user_id: 1,
-        created_by: 1,
-        updated_by: 1,
+        tenant_id: '213d49dd-30de-4ca6-a4d5-c87823213add',
+        user_id: '18e56058-8f2e-468b-9d10-c9a65586dfa6',
+        created_by: '18e56058-8f2e-468b-9d10-c9a65586dfa6',
+        updated_by: '18e56058-8f2e-468b-9d10-c9a65586dfa6',
       },
     ]);
 };

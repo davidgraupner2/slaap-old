@@ -12,10 +12,10 @@ exports.seed = async function (knex) {
     .table('role_user')
     .insert([
       {
-        role_id: 1,
-        user_id: 1,
-        created_by: 1,
-        updated_by: 1,
+        role_id: '97c026c7-98a4-4315-8126-c2b42a510120',
+        user_id: '18e56058-8f2e-468b-9d10-c9a65586dfa6',
+        created_by: '18e56058-8f2e-468b-9d10-c9a65586dfa6',
+        updated_by: '18e56058-8f2e-468b-9d10-c9a65586dfa6',
       },
     ]);
 };

@@ -6,8 +6,10 @@ const constants = require('../constants/constants.columntypes.js');
  */
 exports.up = function (knex) {
   return knex.schema.withSchema('public').createTable('dictionary_column', function (table) {
-    table.bigIncrements('id');
-    table.bigint('table_id').unsigned().notNullable();
+    // table.bigIncrements('id');
+    table.uuid('id').primary();
+    // table.bigint('table_id').unsigned().notNullable();
+    table.uuid('table_id').unsigned().notNullable().primary();
     table.foreign('table_id').references('dictionary_table.id').onDelete('CASCADE');
     table.string('name', 50).notNullable();
     table.string('type', 25).checkIn(Object.values(constants.COLUMNTYPES)).notNullable();
@@ -19,8 +21,10 @@ exports.up = function (knex) {
 
     // Keep track of who/when created / updated
     table.timestamps(true, true);
-    table.bigInteger('created_by').unsigned().notNullable();
-    table.bigInteger('updated_by').unsigned().notNullable();
+    // table.bigInteger('created_by').unsigned().notNullable();
+    // table.bigInteger('updated_by').unsigned().notNullable();
+    table.uuid('created_by').unsigned().notNullable();
+    table.uuid('updated_by').unsigned().notNullable();
     table.foreign('created_by').references('user.id').onDelete('CASCADE');
     table.foreign('updated_by').references('user.id').onDelete('CASCADE');
   });
