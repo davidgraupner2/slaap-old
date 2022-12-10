@@ -19,11 +19,12 @@ export class IdTokenService {
   constructor(private jwtService: JwtService, private logger: Logger, private configService: ConfigService, private usersService: UsersService) {}
 
   // Generate the signed JWT Token and Refresh Token
-  async getTokens(userId: number, email: string, action: TokenActionTypeEnum) {
+  async getTokens(userId: number, email: string, tenantId: any, action: TokenActionTypeEnum) {
     // Generate the payload
     const payload = {
       sub: userId,
       username: email,
+      tenant: tenantId,
     };
 
     // Generate the JWT ID's
@@ -68,6 +69,6 @@ export class IdTokenService {
     /*
     Recreate some new access tokens and refresh tokens
     */
-    return this.getTokens(userId, userName, TokenActionTypeEnum.refreshToken);
+    // return this.getTokens(userId, userName, TokenActionTypeEnum.refreshToken);
   }
 }

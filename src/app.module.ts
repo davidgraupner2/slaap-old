@@ -17,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { GlobalLoggingInterceptor } from './interceptors/global.logging.interceptor';
 import { GlobalHttpExceptionFilter } from './filters/global.httpexception.filter';
+import { TenantModule } from './tenant/tenant.module';
 
 // Make it easier to set the logging format for Winston below
 const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
@@ -65,6 +66,7 @@ const { combine, timestamp, prettyPrint, colorize, errors, json } = format;
     DatabaseModule,
     UsersModule,
     AuthModule,
+    TenantModule,
   ],
   controllers: [AppController],
   providers: [

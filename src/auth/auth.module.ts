@@ -11,6 +11,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './passport.guards';
 import { UsersService } from 'src/users/users.service';
 import { DatabaseService } from 'src/database/database.service';
+import { TenantService } from 'src/tenant/tenant.service';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { DatabaseService } from 'src/database/database.service';
     LocalStrategy,
     JwtStrategy,
     JwtRefreshStrategy,
+    TenantService,
     // Register the JWTAuthGuard as a global guard
     // i.e. All routes require JWT Authentication unless marked as public
     { provide: APP_GUARD, useClass: JwtAuthGuard },

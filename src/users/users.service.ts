@@ -7,23 +7,22 @@ import { LoginUserDto } from './dto';
 import { ConfigService } from 'src/config/config.service';
 import { v4 as uuidv4 } from 'uuid';
 
-interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
+// interface User {
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   password: string;
+// }
 
 @Injectable()
 export class UsersService {
-  /*
-   Inject knexjs into the service
-   see: https://knexjs.org/guide/
-  */
   constructor(@InjectModel() private readonly knex: Knex, private logger: Logger, private configService: ConfigService) {}
 
+  /* 
+  Find and return all users with no where clause
+  */
   async findAll() {
-    const users = await this.knex.table('users').orderBy('id');
+    const users = await this.knex.table('user');
     return { users };
   }
 

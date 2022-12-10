@@ -3,6 +3,13 @@ import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { ConfigService } from 'src/config/config.service';
 
+export class whereClause {
+  constructor(public name: string, public value: any) {
+    this.name = name;
+    this.value = value;
+  }
+}
+
 enum columnType {
   boolean,
   string,
@@ -229,6 +236,36 @@ export class DatabaseService {
   //   });
   //   }
   // });
+
+  public async getRecords(schemaName: string, tableName: string, columnNames: Array<string>, whereClauses: Array<whereClause>) {
+    let records = this.knex.withSchema(schemaName).from(tableName);
+
+    columnNames.forEach((column) => {
+      records = records.column(column);
+    });
+
+    whereClauses.forEach((where) => {
+      records = records.where(where.name, where.value);
+    });
+
+    return await records.select();
+  }
+
+  public async getFirstRecord(schemaName: string, tableName: string, columnNames: Array<string>, whereClauses: Array<whereClause>) {
+    let record = this.knex.withSchema(schemaName).from(tableName);
+
+    columnNames.forEach((column) => {
+      record = record.select(column);
+    });
+
+    whereClauses.forEach((where) => {
+      record = record.where(where.name, where.value);
+    });
+
+    record = await record.first();
+
+    return record;
+  }
 }
 
 // this.knex.schema

@@ -17,6 +17,8 @@ exports.seed = async function (knex) {
         schema_name: 'public',
         created_by: '18e56058-8f2e-468b-9d10-c9a65586dfa6',
         updated_by: '18e56058-8f2e-468b-9d10-c9a65586dfa6',
+        is_public: true,
+        is_active: true,
       },
     ]);
 };
