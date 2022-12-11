@@ -27,16 +27,27 @@ export class AuthController {
     // will never run - passport.js will return an unauthorized exception
 
     /***********************************************************************
-     We got here - so passport.js has validated the username and password  
+     We got here - so passport.js has validated the username and password 
+     - and we have a user attached to the request object 
      **********************************************************************/
 
-    if (await this.tenantService.isValidTenantForUser(params.id, req.user.id, req.user.is_msp)) {
+    // Get the tenant that this user logged into - if its a valid tenant
+    const tenant = await this.tenantService.getValidTenantForUser(params.id, req.user.id, req.user.is_msp);
+
+    if (tenant) {
       /*
-       If we get here, we have a valid user object and valid tenant access, create and return the token
-       */
+       If we get here, we have a valid user object and valid tenant access
+      */
+
+      // Add the tenant to the request object
+      req.user.tenant = tenant;
+
+      // Return the ID Token to the user
       return this.idTokenService.getTokens(req.user.id, req.user.username, params.id, TokenActionTypeEnum.login);
     } else {
-      /* We have a valid user object, but the tenant requested is not valid - see logs */
+      /* 
+      We have a valid user object, but the tenant requested is not valid - see logs 
+      */
       throw new UnauthorizedException(authConstants.CREDENTIALS_INCORRECT);
     }
   }

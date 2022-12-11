@@ -14,7 +14,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  // Passport js call this function to authenticate a user
+  // This Passport js strategy calls this function to locally authenticate the user
   async validate(username: string, password: string): Promise<any> {
     /*
     If a user is returned from the AuthService - then the user was validated using the username and password

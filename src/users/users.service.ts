@@ -61,6 +61,7 @@ export class UsersService {
       )
       .from('user')
       .where('user.userName', userName)
+      .where('is_active', true)
       .first();
 
     return user;

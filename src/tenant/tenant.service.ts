@@ -12,12 +12,14 @@ export class TenantService {
   - Is the Tenant Active
   - Does the user have access to the tenant
   - Is the Tenant Public and user is MSP User */
-  async isValidTenantForUser(tenantId: any, userId: any, userIsMSP: boolean): Promise<boolean> {
-    // Get the tenant record associated with the id passed in
+  async getValidTenantForUser(tenantId: any, userId: any, userIsMSP: boolean): Promise<object> {
+    /*
+    first get the tenant record associated with the id passed in
+    */
     const tenant = await this.getTenantById(tenantId);
     if (!tenant) {
       // Tenant not found (could be inactive - see logs)
-      return false;
+      return undefined;
     }
 
     // Check that only MSP Users can login to the public tenant
@@ -26,17 +28,18 @@ export class TenantService {
         `Tenant '${tenant.name}' with ID '${tenantId}' is the public tenant. User with ID '${userId} is not an MSP User and cannot login to this tenant`,
         this.constructor.name,
       );
-      return false;
+      return undefined;
     }
 
     // Final check - check the user has access to the tenant requested
-    if (!(await this.userHasAccessToTenant(userId, tenantId))) {
+    if (!(await this.userHasAccessToTenant(userId, tenant.id))) {
       this.logger.warn(`User with ID '${userId} has NO ACCESS to Tenant '${tenant.name}' with ID '${tenantId}'.`, this.constructor.name);
-      return false;
+      return undefined;
     }
 
     // all test passed validation
-    return true;
+    // - return the tenant
+    return tenant;
   }
 
   /* 

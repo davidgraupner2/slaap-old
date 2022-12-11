@@ -8,7 +8,6 @@ export class ConfigController {
 
   @Get('platform')
   platformConfiguration(@Request() req) {
-    console.log(req.user);
     return this.configService.configuration();
   }
 }

@@ -14,6 +14,7 @@ exports.up = function (knex) {
     table.string('email', 255).unique().notNullable();
     table.string('password', 1024).notNullable();
     table.boolean('verified').notNullable().defaultTo(false);
+    table.boolean('is_active').notNullable().defaultTo(true);
 
     // Indicates if the user is a MSP User
     // - MSP Users can belong to multiple tenants
